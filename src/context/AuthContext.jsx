@@ -1,4 +1,4 @@
-// context/AuthContext.jsx
+// src/context/AuthContext.jsx
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
@@ -11,6 +11,10 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // 🆕 Modal control
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authView, setAuthView] = useState('login'); // 'login' | 'signup'
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -19,8 +23,25 @@ export function AuthProvider({ children }) {
     return () => unsubscribe();
   }, []);
 
+  const openAuthModal = (view = 'login') => {
+    setAuthView(view);
+    setShowAuthModal(true);
+  };
+
+  const closeAuthModal = () => setShowAuthModal(false);
+
   return (
-    <AuthContext.Provider value={{ user, loading }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        showAuthModal,
+        authView,
+        openAuthModal,
+        closeAuthModal,
+        setAuthView,
+      }}
+    >
       {!loading && children}
     </AuthContext.Provider>
   );
