@@ -1,17 +1,27 @@
-// src/app/layout.js
-import { AuthProvider } from '@/context/AuthContext';
-import Navbar from '@/components/_client/Navbar';
-import AuthModal from '@/components/_client/auth/AuthModal';
-import './globals.css';
+import Footer from "@/components/Footer";
+import Navbar from "../components/Navbar";
+import "./globals.css";
+import { AuthProvider } from "../context/AuthContext";
+import { CartProvider } from "../context/CartContext";
+
+export const metadata = {
+  icons: {
+    icon: "./favicon2.png",
+  },
+  title: "Crown Chicken",
+  description: "Next.js Firebase CRUD",
+};
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>
+      <body className="bg-neutral-200">
         <AuthProvider>
-          <Navbar />
-          {children}
-          <AuthModal /> {/* 🆕 Modal yahan render hoga, jab bhi trigger ho */}
+          <CartProvider>
+            <Navbar />
+            {children}
+            <Footer />
+          </CartProvider>
         </AuthProvider>
       </body>
     </html>
