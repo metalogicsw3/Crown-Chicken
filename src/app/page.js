@@ -11,8 +11,6 @@ export default function Home() {
       <div className="w-full lg:w-auto lg:shrink-0">
         <AddtoCart />
       </div>
-
-      
     </div>
   );
 }
