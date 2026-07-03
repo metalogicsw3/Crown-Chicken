@@ -1,8 +1,7 @@
-"use client"
-
+// src/dummy/page.jsx 
+"use client";
 import { useState } from "react"
-import SearchBar from "@/components/SearchBar"
-import CheckOut from "@/components/CheckOut"
+import CheckOut2 from "@/components/CheckOut2";
 
 export default function DummyPage() {
 
@@ -24,8 +23,7 @@ export default function DummyPage() {
                         <div className="bg-white p-5 rounded">
 
                             {/* Yaha component render hoga */}
-                            <SearchBar />
-                            <CheckOut />
+                            <CheckOut2 />
 
                             <button
                                 onClick={() => setShowPopup(false)}

@@ -4,8 +4,10 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Loader2, Image as ImageIcon, Utensils, ShoppingCart } from "lucide-react";
 import { useCart } from "@/context/CartContext";
+import CheckOut from "./CheckOut";
+import { RxCross1 } from "react-icons/rx";
 
-const ItemsPage = () => {
+const ItemsPage = ({ check, setCheck }) => {
     const [foods, setFoods] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedCategory, setSelectedCategory] = useState("All");
@@ -81,7 +83,7 @@ const ItemsPage = () => {
     }
 
     return (
-        <div className="w-full max-w-auto p-4 sm:p-6 lg:p-10 h-screen overflow-y-auto">
+        <div className="w-full max-w-auto p-4 sm:p-6 lg:p-2 h-screen overflow-y-auto">
             {/* Header */}
             <div className="mb-8">
                 <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 flex items-center gap-3 flex-wrap">
@@ -176,25 +178,40 @@ const ItemsPage = () => {
                                             {food.category || "Uncategorized"}
                                         </span>
                                     </div>
-                                <div className="pt-2">
-                                    <button
-                                        onClick={() => handleAddToCart(food)}
-                                        className={`w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                                            addedIds[food.id]
+                                    <div className="pt-2">
+                                        <button
+                                            onClick={() => handleAddToCart(food)}
+                                            className={`w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${addedIds[food.id]
                                                 ? "bg-green-500 text-white scale-95"
                                                 : "bg-orange-500 hover:bg-orange-600 text-white"
-                                        }`}
-                                    >
-                                        <ShoppingCart className="w-4 h-4" />
-                                        {addedIds[food.id] ? "Added!" : "Add to Cart"}
-                                    </button>
-                                </div>
+                                                }`}
+                                        >
+                                            <ShoppingCart className="w-4 h-4" />
+                                            {addedIds[food.id] ? "Added!" : "Add to Cart"}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         ))}
                     </div>
                 </div>
             ))}
+
+            {check && <div
+                className="fixed inset-0 z-50 p-10 bg-black/50 backdrop-blur-xl flex items-center justify-center">
+                <div className="bg-white p-5 rounded">
+                    <div className="flex justify-end">
+                        <button
+                            onClick={() => setCheck(false)}
+                            className="px-3 py-1 rounded"
+                        >
+                            <RxCross1 className="hover:scale-120 transition" size={25} />
+                        </button>
+                    </div>
+
+                    <CheckOut />
+                </div>
+            </div>}
 
             {filteredFoods.length === 0 && (
                 <div className="text-center py-16 bg-white rounded-2xl shadow-lg border border-gray-100">
@@ -208,3 +225,5 @@ const ItemsPage = () => {
 };
 
 export default ItemsPage;
+
+

@@ -1,3 +1,5 @@
+// src/components/AddtoCArt.jsx 
+
 'use client';
 import { useState } from "react";
 import { useCart } from "@/context/CartContext";
@@ -17,12 +19,11 @@ import {
 const DELIVERY_FEE = 3;
 const SERVICE_FEE = 1.5;
 
-const AddtoCart = () => {
+const AddtoCart = ({setCheck}) => {
   const { items, loading, uid, updateQty, removeFromCart, clearCart, cartTotal } = useCart();
   const [deliveryMethod, setDeliveryMethod] = useState("delivery");
   const [discountCode, setDiscountCode] = useState("");
   const [discount, setDiscount] = useState(0);
-  const [check, setCheck] = useState(false) 
 
   const deliveryFee = deliveryMethod === "delivery" ? DELIVERY_FEE : 0;
   const total = cartTotal + deliveryFee + SERVICE_FEE - discount;
@@ -38,8 +39,8 @@ const AddtoCart = () => {
   };
 
   return (
-    <div className="w-full p-4 sm:p-6 md:p-10 flex items-center justify-center mx-auto">
-      <div className="w-full h-205 max-w-md max-h-screen flex flex-col rounded-lg bg-white shadow-xl border-l border-gray-200 overflow-hidden">
+    <div className="w-full py-5 ">
+      <div className="w-full h-160  max-w-md max-h-screen flex flex-col rounded-lg bg-white shadow-xl border-l border-gray-200 overflow-hidden">
 
         {/* Header */}
         <div className="p-4 border-b border-gray-200 shrink-0 flex items-center justify-between">
@@ -219,7 +220,7 @@ const AddtoCart = () => {
 
           {items.length > 0 && (
             <>
-              <div className="space-y-2 text-sm">
+              <div className="space-y-1.5 text-sm">
                 <div className="flex justify-between text-gray-600">
                   <span>Subtotal</span>
                   <span>£{cartTotal.toFixed(2)}</span>
@@ -238,13 +239,13 @@ const AddtoCart = () => {
                     <span>-£{discount.toFixed(2)}</span>
                   </div>
                 )}
-                <div className="border-y border-gray-200 py-2">
+                <div className="border-y border-gray-200 py-1">
                   <div className="flex justify-between text-base font-bold text-gray-800">
                     <span>Total</span>
                     <span>£{total.toFixed(2)}</span>
                   </div>
                 </div>
-                <div className="flex items-center justify-center">
+                <div className="flex items-center justify-center py-1">
                   <button
                     onClick={() => {setCheck(true)}}
                     className="px-8 py-2 bg-black text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition">
@@ -255,9 +256,11 @@ const AddtoCart = () => {
             </>
           )}
         </div>
+        
       </div>
     </div>
   );
 };
 
 export default AddtoCart;
+

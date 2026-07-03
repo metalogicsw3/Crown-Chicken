@@ -29,6 +29,7 @@ export function CartProvider({ children }) {
   const [uid, setUid] = useState(null);          // null = guest
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  
 
   // Track auth state
   useEffect(() => {
