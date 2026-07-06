@@ -1,17 +1,17 @@
-// src/components/CheckOut1 
+// src/components/CheckOut 
 "use client";
 
+import { useState } from "react";
 import { useCart } from "@/context/CartContext";
-import { useRouter, usePathname } from "next/navigation";
 import { db } from "@/lib/firebase";
 import { addDoc, collection } from "firebase/firestore";
-import { useState } from "react";
+// import { useRouter, usePathname } from "next/navigation";
 
 const DELIVERY_FEE = 3;
 
-const CheckOut1 = () => {
+const CheckOut = ({ setCheck }) => {
 
-  const router = useRouter();
+  // const router = useRouter();  
 
   const [userData, setUserData] = useState({
     name: '',
@@ -38,19 +38,42 @@ const CheckOut1 = () => {
       return;
     }
     try {
-      await addDoc(collection(db, "userData"), {
+
+      // Login ya Guest User
+      const userType = uid ? "user" : "guest" ;
+
+      // Order Items
+      const orderItems = items.map((item) =>({
+        foodId: item.foodId,
+        name: item.name,
+        price: item.price,
+        qty: item.qty || 1,
+        image: item.image || "",
+      }))
+
+      await addDoc(collection(db, "orders"), {
         name: userData.name,
         postcode: userData.postcode,
         emailadd: userData.emailadd,
         phonnum: userData.phonnum,
+
+        userType : userType,
+        userId : uid || null,
+        paymentMethod : paymentMethod,
+        items : orderItems ,
+
+        subtotal : cartTotal,
+        total : total,
+
+        createAt : new Date(),
       })
-      alert("Done✅");
+      alert("Order Placed Successfully ✅");
 
       clearCart();
 
-      // setCheck(false); <== For false useState
+      // router.push("/"); <== For Page Routing 
 
-      router.push("/");
+      setCheck(false);
 
     } catch (error) {
       console.error(error)
@@ -163,7 +186,7 @@ const CheckOut1 = () => {
             <div className="space-y-3">
               <div>
                 <label>
-                  <input required={true} onChange={(e) => setPaymentMethod(e.target.value)} type="radio" /> Pay via phone or at the restaurant.
+                  <input  value="Cash On Delivery" required={true} onChange={(e) => setPaymentMethod(e.target.value)} type="radio" /> Pay via phone or at the restaurant.
                 </label>
               </div>
               <p className="flex flex-col p-4 bg-gray-900/20 rounded-sm">
@@ -198,4 +221,4 @@ const CheckOut1 = () => {
   );
 };
 
-export default CheckOut1;
+export default CheckOut;
