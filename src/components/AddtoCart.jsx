@@ -17,7 +17,6 @@ import {
 } from "react-icons/md";
 
 const DELIVERY_FEE = 3;
-const SERVICE_FEE = 1.5;
 
 const AddtoCart = ({setCheck}) => {
   const { items, loading, uid, updateQty, removeFromCart, clearCart, cartTotal } = useCart();
@@ -26,7 +25,7 @@ const AddtoCart = ({setCheck}) => {
   const [discount, setDiscount] = useState(0);
 
   const deliveryFee = deliveryMethod === "delivery" ? DELIVERY_FEE : 0;
-  const total = cartTotal + deliveryFee + SERVICE_FEE - discount;
+  const total = cartTotal + deliveryFee - discount;
 
   const handleApplyDiscount = () => {
     // Placeholder — wire up real discount logic as needed
@@ -39,11 +38,11 @@ const AddtoCart = ({setCheck}) => {
   };
 
   return (
-    <div className="w-full py-5 ">
-      <div className="w-full h-160  max-w-md max-h-screen flex flex-col rounded-lg bg-white shadow-xl border-l border-gray-200 overflow-hidden">
+    <div className="w-full py-2 ">
+      <div className="w-full h-auto  max-w-md max-h-screen flex flex-col rounded-lg bg-white shadow-xl border-l border-gray-200 overflow-hidden">
 
         {/* Header */}
-        <div className="p-4 border-b border-gray-200 shrink-0 flex items-center justify-between">
+        <div className="p-2 border-b border-gray-200 shrink-0 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
             <MdShoppingCart className="text-xl text-orange-500" />
             Your Cart
@@ -129,7 +128,7 @@ const AddtoCart = ({setCheck}) => {
           ) : (
             <div className="space-y-3">
               {items.map((item) => (
-                <div key={item.foodId} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                <div key={item.foodId} className="flex items-center gap-3 py-1.5 px-3 bg-gray-50 rounded-lg">
                   {/* Thumbnail */}
                   {item.imageUrl && (
                     <img
@@ -142,7 +141,7 @@ const AddtoCart = ({setCheck}) => {
                   {/* Info */}
                   <div className="flex-1 min-w-0">
                     <h4 className="font-medium text-gray-800 text-sm truncate">{item.name}</h4>
-                    <p className="text-gray-600 font-medium text-sm">
+                    <p className="text-gray-600 font-medium text-xs">
                       £{item.price.toFixed(2)}
                     </p>
                   </div>
@@ -229,10 +228,6 @@ const AddtoCart = ({setCheck}) => {
                   <span>Delivery Fee</span>
                   <span>£{deliveryFee.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-gray-600">
-                  <span>Service Fee</span>
-                  <span>£{SERVICE_FEE.toFixed(2)}</span>
-                </div>
                 {discount > 0 && (
                   <div className="flex justify-between text-green-600">
                     <span>Discount</span>
@@ -263,4 +258,7 @@ const AddtoCart = ({setCheck}) => {
 };
 
 export default AddtoCart;
+
+
+
 

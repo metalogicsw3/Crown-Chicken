@@ -4,7 +4,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Loader2, Image as ImageIcon, Utensils, ShoppingCart } from "lucide-react";
 import { useCart } from "@/context/CartContext";
-import CheckOut from "./CheckOut";
+import CheckOut2 from "./CheckOut2";
 import { RxCross1 } from "react-icons/rx";
 
 const ItemsPage = ({ check, setCheck }) => {
@@ -209,7 +209,7 @@ const ItemsPage = ({ check, setCheck }) => {
                         </button>
                     </div>
 
-                    <CheckOut />
+                    <CheckOut2 setCheck={setCheck} />
                 </div>
             </div>}
 

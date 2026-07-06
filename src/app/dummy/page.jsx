@@ -1,4 +1,5 @@
 // src/dummy/page.jsx 
+
 "use client";
 import { useState } from "react"
 import CheckOut2 from "@/components/CheckOut2";

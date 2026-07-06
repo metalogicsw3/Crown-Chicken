@@ -1,4 +1,4 @@
-// src/components/CheckOut2 
+// src/components/CheckOut1 
 "use client";
 
 import { useCart } from "@/context/CartContext";
@@ -9,9 +9,9 @@ import { useState } from "react";
 
 const DELIVERY_FEE = 3;
 
-const CheckOut2 = ({ setCheck }) => {
+const CheckOut1 = () => {
 
-  // const router = useRouter();  
+  const router = useRouter();
 
   const [userData, setUserData] = useState({
     name: '',
@@ -48,9 +48,9 @@ const CheckOut2 = ({ setCheck }) => {
 
       clearCart();
 
-      // router.push("/"); <== For Page Routing 
+      // setCheck(false); <== For false useState
 
-      setCheck(false);
+      router.push("/");
 
     } catch (error) {
       console.error(error)
@@ -198,4 +198,4 @@ const CheckOut2 = ({ setCheck }) => {
   );
 };
 
-export default CheckOut2;
+export default CheckOut1;
