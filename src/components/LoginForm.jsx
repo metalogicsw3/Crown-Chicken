@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { loginUser } from "@/lib/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { toast } from 'react-hot-toast';
+import { showToast } from "@/lib/toast";
+import { useState, useRef } from "react";
 
 
 export default function LoginForm({ setView, onClose }) {
@@ -13,33 +15,51 @@ export default function LoginForm({ setView, onClose }) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
+    const toastId = useRef(null);
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        if(!email || !password) {
+            showToast.error("Please fill in all fields");
+            return;
+        }
+
         try {
             setLoading(true);
+            toastId.current = showToast.loading("Logging in....")
             const user = await loginUser(email, password);
-            console.log("LOGIN SUCCESS:", user);
-            setEmail(''); setPassword('')
+            setEmail('');
+            setPassword('');
             const userRef = doc(db, "users", user.uid);
             const userSnap = await getDoc(userRef);
             if (userSnap.exists()) {
                 const userData = userSnap.data();
+                toast.dismiss(toastId.current)
+
                 if (userData.role === "admin") {
+                    showToast.success("Welcome Admin! 👋")
                     router.push("/dashboard");
-                } else { router.push("/"); }
+                } else {
+                    showToast.success("Welcome back! 👋");
+                    router.push("/");
+                }
             }
             onClose();
+
         } catch (error) {
             console.error(error);
+             toast.dismiss(toastId.current);
+
             if (error.code === "auth/invalid-credential") {
-                alert("Incorrect email or password.");
+                showToast.error("Incorrect email or password.");
             } else if (error.code === "auth/too-many-requests") {
-                alert("Too many failed attempts. Try again later.");
+                showToast.error("Too many failed attempts. Try again later.");
             } else {
-                alert(`Login failed: ${error.code}`);
+                 showToast.error(`Login failed: ${error.message || "Please try again"}`);
+                }
+            } finally{
+                setLoading(false)
             }
-        }
     }
 
     return (

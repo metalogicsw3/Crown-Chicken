@@ -8,11 +8,14 @@ import { auth } from "@/lib/firebase";
 import { logoutUser } from "@/lib/auth";
 import SearchBar from "./SearchBar";
 import AuthModal from "./AuthModal";
+import { toast } from 'react-hot-toast'; // ✅ Added
+import { showToast } from "@/lib/toast"; // ✅ Added
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
+  const [logoutLoading, setLogoutLoading] = useState(false); // ✅ Added
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -24,9 +27,25 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     try {
+      setLogoutLoading(true);
+      
+      // ✅ Show loading toast
+      const toastId = showToast.loading("Logging out...");
+      
       await logoutUser();
+      
+      // ✅ Dismiss loading and show success
+      toast.dismiss(toastId);
+      showToast.success("Logged out successfully! 👋");
+      
     } catch (err) {
       console.error("Logout error:", err);
+      
+      // ✅ Show error toast
+      showToast.error(`Logout failed: ${err.message || "Please try again"}`);
+      
+    } finally {
+      setLogoutLoading(false);
     }
   };
 
@@ -62,9 +81,10 @@ export default function Navbar() {
             ) : user ? (
               <button
                 onClick={handleLogout}
-                className="bg-white text-blue-900 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50 transition-colors"
+                disabled={logoutLoading} // ✅ Added disabled
+                className="bg-white text-blue-900 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Logout
+                {logoutLoading ? "Logging out..." : "Logout"} {/* ✅ Changed text */}
               </button>
             ) : (
               <button

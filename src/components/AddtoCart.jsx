@@ -75,7 +75,7 @@ const AddtoCart = ({setCheck}) => {
               <MdDeliveryDining className="text-lg" />
               <div className="text-left">
                 <div className="font-medium text-xs">Delivery</div>
-                <div className="text-[10px] text-gray-400">£10 minimum</div>
+                <div className="text-[10px] text-gray-400">£3 minimum</div>
               </div>
             </button>
             <button
@@ -88,7 +88,6 @@ const AddtoCart = ({setCheck}) => {
               <MdStorefront className="text-lg" />
               <div className="text-left">
                 <div className="font-medium text-xs">Pickup</div>
-                <div className="text-[10px] text-gray-400">£6 minimum</div>
               </div>
             </button>
           </div>

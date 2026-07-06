@@ -6,6 +6,9 @@ import { useCart } from "@/context/CartContext";
 import { db } from "@/lib/firebase";
 import { addDoc, collection } from "firebase/firestore";
 // import { useRouter, usePathname } from "next/navigation";
+import { toast } from 'react-hot-toast';
+import { showToast } from "@/lib/toast";
+import { useRef } from "react";
 
 const DELIVERY_FEE = 3;
 
@@ -19,7 +22,8 @@ const CheckOut = ({ setCheck }) => {
     emailadd: '',
     phonnum: '',
   })
-  const [paymentMethod, setPaymentMethod] = useState('')
+  const [paymentMethod, setPaymentMethod] = useState('');
+  const toastId = useRef(null); 
   const {
     items,
     loading,
@@ -34,9 +38,13 @@ const CheckOut = ({ setCheck }) => {
     e.preventDefault();
 
     if (paymentMethod === '') {
-      alert("Please select Payment method");
+      showToast.error("Please select Payment method");
       return;
     }
+
+     // ✅ Show loading toast
+    toastId.current = showToast.loading('Placing your order...');
+
     try {
 
       // Login ya Guest User
@@ -67,16 +75,17 @@ const CheckOut = ({ setCheck }) => {
 
         createAt : new Date(),
       })
-      alert("Order Placed Successfully ✅");
-
-      clearCart();
+      toast.dismiss(toastId.current);
+      showToast.success("Your order has been placed successfully! 🎉")
 
       // router.push("/"); <== For Page Routing 
-
+      clearCart();
       setCheck(false);
 
     } catch (error) {
-      console.error(error)
+      console.error(error);
+      toast.dismiss(toastId.current);
+      showToast.error("Failed to place order. Please try again.");
     }
   }
 
