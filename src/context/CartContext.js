@@ -43,6 +43,7 @@ export function CartProvider({ children }) {
   const [deliveryMethod, setDeliveryMethod] = useState("delivery");
   const [discount, setDiscount] = useState(0);
   const [check, setCheck] = useState(false);
+  const [userOpen, setUserOpen] = useState(false);
 
   // Track auth state
   useEffect(() => {
@@ -197,7 +198,7 @@ export function CartProvider({ children }) {
         clearCart,
         cartCount,
         cartTotal,
-        
+
         check,
         setCheck,
 
@@ -209,6 +210,9 @@ export function CartProvider({ children }) {
 
         deliveryFee,
         total,
+
+        userOpen,
+        setUserOpen,
       }}
     >
       {children}

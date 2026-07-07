@@ -1,49 +1,74 @@
 // src/components/Navbar.jsx
 'use client';
+
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { logoutUser } from "@/lib/auth";
 import SearchBar from "./SearchBar";
 import AuthModal from "./AuthModal";
-import { toast } from 'react-hot-toast'; // ✅ Added
-import { showToast } from "@/lib/toast"; // ✅ Added
+import { toast } from "react-hot-toast";
+import { showToast } from "@/lib/toast";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { useCart } from "@/context/CartContext";
 
 export default function Navbar() {
+  const { userOpen, setUserOpen } = useCart();
+
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
-  const [logoutLoading, setLogoutLoading] = useState(false); // ✅ Added
+  const [logoutLoading, setLogoutLoading] = useState(false);
 
+  // Dropdown Ref
+  const dropdownRef = useRef(null);
+
+  // Firebase Auth Listener
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setAuthLoading(false);
     });
+
     return () => unsubscribe();
   }, []);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target)
+      ) {
+        setUserOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [setUserOpen]);
 
   const handleLogout = async () => {
     try {
       setLogoutLoading(true);
-      
-      // ✅ Show loading toast
+
       const toastId = showToast.loading("Logging out...");
-      
+
       await logoutUser();
-      
-      // ✅ Dismiss loading and show success
+
       toast.dismiss(toastId);
       showToast.success("Logged out successfully! 👋");
-      
     } catch (err) {
       console.error("Logout error:", err);
-      
-      // ✅ Show error toast
-      showToast.error(`Logout failed: ${err.message || "Please try again"}`);
-      
+
+      showToast.error(
+        `Logout failed: ${err.message || "Please try again"}`
+      );
     } finally {
       setLogoutLoading(false);
     }
@@ -66,7 +91,8 @@ export default function Navbar() {
               height={40}
               className="object-contain rounded-md"
             />
-             Crown Chicken
+
+            Crown Chicken
           </Link>
 
           {/* Search Bar */}
@@ -74,18 +100,56 @@ export default function Navbar() {
             <SearchBar />
           </div>
 
-          {/* Account / Logout Button */}
+          {/* Account */}
           <div className="flex items-center gap-3 whitespace-nowrap">
             {authLoading ? (
               <div className="w-20 h-9 bg-blue-800 rounded-lg animate-pulse" />
             ) : user ? (
-              <button
-                onClick={handleLogout}
-                disabled={logoutLoading} // ✅ Added disabled
-                className="bg-white text-blue-900 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              <div
+                ref={dropdownRef}
+                className="relative flex items-center gap-2"
               >
-                {logoutLoading ? "Logging out..." : "Logout"} {/* ✅ Changed text */}
-              </button>
+                {/* User Button */}
+                <button
+                  onClick={() => setUserOpen(!userOpen)}
+                  className="bg-white text-blue-900 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    User
+                    <span>
+                      {userOpen ? <FaChevronUp /> : <FaChevronDown />}
+                    </span>
+                  </div>
+                </button>
+
+                {/* Dropdown */}
+                <div
+                  className={`absolute top-full right-0 mt-3 w-44 origin-top bg-white rounded-lg border shadow-lg z-50 transition-all duration-900 ease-in-out
+                    ${
+                      userOpen
+                        ? "opacity-100 scale-y-100 visible"
+                        : "opacity-0 scale-y-95 invisible pointer-events-none"
+                    }
+                  `}
+                >
+                  <button className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
+                    Profile
+                  </button>
+
+                  <button className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
+                    Order list
+                  </button>
+                </div>
+
+                {/* Logout Button */}
+                <button
+                  onClick={handleLogout}
+                  disabled={logoutLoading}
+                  className="bg-white text-blue-900 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {logoutLoading ? "Logging out..." : "Logout"}
+                </button>
+              </div>
             ) : (
               <button
                 onClick={() => setIsOpen(true)}
@@ -95,11 +159,9 @@ export default function Navbar() {
               </button>
             )}
           </div>
-
         </div>
       </nav>
 
-      {/* Auth Modal OUTSIDE NAV (important) */}
       <AuthModal
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
