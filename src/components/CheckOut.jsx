@@ -10,7 +10,6 @@ import { toast } from 'react-hot-toast';
 import { showToast } from "@/lib/toast";
 import { useRef } from "react";
 
-const DELIVERY_FEE = 3;
 
 const CheckOut = ({ setCheck }) => {
 
@@ -23,7 +22,7 @@ const CheckOut = ({ setCheck }) => {
     phonnum: '',
   })
   const [paymentMethod, setPaymentMethod] = useState('');
-  const toastId = useRef(null); 
+  const toastId = useRef(null);
   const {
     items,
     loading,
@@ -32,6 +31,8 @@ const CheckOut = ({ setCheck }) => {
     removeFromCart,
     clearCart,
     cartTotal,
+    deliveryFee,
+    total,
   } = useCart();
 
   const saveData = async (e) => {
@@ -42,16 +43,16 @@ const CheckOut = ({ setCheck }) => {
       return;
     }
 
-     // ✅ Show loading toast
+    // ✅ Show loading toast
     toastId.current = showToast.loading('Placing your order...');
 
     try {
 
       // Login ya Guest User
-      const userType = uid ? "user" : "guest" ;
+      const userType = uid ? "user" : "guest";
 
       // Order Items
-      const orderItems = items.map((item) =>({
+      const orderItems = items.map((item) => ({
         foodId: item.foodId,
         name: item.name,
         price: item.price,
@@ -65,15 +66,15 @@ const CheckOut = ({ setCheck }) => {
         emailadd: userData.emailadd,
         phonnum: userData.phonnum,
 
-        userType : userType,
-        userId : uid || null,
-        paymentMethod : paymentMethod,
-        items : orderItems ,
+        userType: userType,
+        userId: uid || null,
+        paymentMethod: paymentMethod,
+        items: orderItems,
 
-        subtotal : cartTotal,
-        total : total,
+        subtotal: cartTotal,
+        total: total,
 
-        createAt : new Date(),
+        createAt: new Date(),
       })
       toast.dismiss(toastId.current);
       showToast.success("Your order has been placed successfully! 🎉")
@@ -88,8 +89,6 @@ const CheckOut = ({ setCheck }) => {
       showToast.error("Failed to place order. Please try again.");
     }
   }
-
-  const total = cartTotal + DELIVERY_FEE;
 
   return (
     <div className="lg:max-w-150 h-180 overflow-y-auto">
@@ -195,7 +194,7 @@ const CheckOut = ({ setCheck }) => {
             <div className="space-y-3">
               <div>
                 <label>
-                  <input  value="Cash On Delivery" required={true} onChange={(e) => setPaymentMethod(e.target.value)} type="radio" /> Pay via phone or at the restaurant.
+                  <input value="Cash On Delivery" required={true} onChange={(e) => setPaymentMethod(e.target.value)} type="radio" /> Pay via phone or at the restaurant.
                 </label>
               </div>
               <p className="flex flex-col p-4 bg-gray-900/20 rounded-sm">

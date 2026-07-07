@@ -1,7 +1,18 @@
 // src/context/CartContext.js
 "use client";
-import { createContext, useContext, useEffect, useState, useCallback } from "react";
-import { doc, onSnapshot, runTransaction, serverTimestamp } from "firebase/firestore";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
+import {
+  doc,
+  onSnapshot,
+  runTransaction,
+  serverTimestamp,
+} from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { db, auth } from "@/lib/firebase";
 
@@ -26,10 +37,9 @@ function writeLocalCart(items) {
 
 // ─────────────────────────────────────────────────────────────────
 export function CartProvider({ children }) {
-  const [uid, setUid] = useState(null);          // null = guest
+  const [uid, setUid] = useState(null); // null = guest
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  
 
   // Track auth state
   useEffect(() => {
@@ -58,13 +68,36 @@ export function CartProvider({ children }) {
   }, [uid]);
 
   // ── addToCart ───────────────────────────────────────────────────
-  const addToCart = useCallback(async (food, qty = 1) => {
-    if (uid) {
-      // Firestore path
-      const cartRef = doc(db, "carts", uid);
-      await runTransaction(db, async (tx) => {
-        const snap = await tx.get(cartRef);
-        const current = snap.exists() ? snap.data().items || [] : [];
+  const addToCart = useCallback(
+    async (food, qty = 1) => {
+      if (uid) {
+        // Firestore path
+        const cartRef = doc(db, "carts", uid);
+        await runTransaction(db, async (tx) => {
+          const snap = await tx.get(cartRef);
+          const current = snap.exists() ? snap.data().items || [] : [];
+          const idx = current.findIndex((i) => i.foodId === food.id);
+          let updated;
+          if (idx > -1) {
+            updated = [...current];
+            updated[idx] = { ...updated[idx], qty: updated[idx].qty + qty };
+          } else {
+            updated = [
+              ...current,
+              {
+                foodId: food.id,
+                name: food.name,
+                price: Number(food.price),
+                imageUrl: food.imageUrl || null,
+                qty,
+              },
+            ];
+          }
+          tx.set(cartRef, { items: updated, updatedAt: serverTimestamp() });
+        });
+      } else {
+        // localStorage path
+        const current = readLocalCart();
         const idx = current.findIndex((i) => i.foodId === food.id);
         let updated;
         if (idx > -1) {
@@ -73,60 +106,63 @@ export function CartProvider({ children }) {
         } else {
           updated = [
             ...current,
-            { foodId: food.id, name: food.name, price: Number(food.price), imageUrl: food.imageUrl || null, qty },
+            {
+              foodId: food.id,
+              name: food.name,
+              price: Number(food.price),
+              imageUrl: food.imageUrl || null,
+              qty,
+            },
           ];
         }
-        tx.set(cartRef, { items: updated, updatedAt: serverTimestamp() });
-      });
-    } else {
-      // localStorage path
-      const current = readLocalCart();
-      const idx = current.findIndex((i) => i.foodId === food.id);
-      let updated;
-      if (idx > -1) {
-        updated = [...current];
-        updated[idx] = { ...updated[idx], qty: updated[idx].qty + qty };
-      } else {
-        updated = [
-          ...current,
-          { foodId: food.id, name: food.name, price: Number(food.price), imageUrl: food.imageUrl || null, qty },
-        ];
+        writeLocalCart(updated);
+        setItems(updated);
       }
-      writeLocalCart(updated);
-      setItems(updated);
-    }
-    return true;
-  }, [uid]);
+      return true;
+    },
+    [uid],
+  );
 
   // ── updateQty ───────────────────────────────────────────────────
-  const updateQty = useCallback(async (foodId, qty) => {
-    if (uid) {
-      const cartRef = doc(db, "carts", uid);
-      await runTransaction(db, async (tx) => {
-        const snap = await tx.get(cartRef);
-        const current = snap.exists() ? snap.data().items || [] : [];
-        const updated = qty <= 0
-          ? current.filter((i) => i.foodId !== foodId)
-          : current.map((i) => (i.foodId === foodId ? { ...i, qty } : i));
-        tx.set(cartRef, { items: updated, updatedAt: serverTimestamp() });
-      });
-    } else {
-      const current = readLocalCart();
-      const updated = qty <= 0
-        ? current.filter((i) => i.foodId !== foodId)
-        : current.map((i) => (i.foodId === foodId ? { ...i, qty } : i));
-      writeLocalCart(updated);
-      setItems(updated);
-    }
-  }, [uid]);
+  const updateQty = useCallback(
+    async (foodId, qty) => {
+      if (uid) {
+        const cartRef = doc(db, "carts", uid);
+        await runTransaction(db, async (tx) => {
+          const snap = await tx.get(cartRef);
+          const current = snap.exists() ? snap.data().items || [] : [];
+          const updated =
+            qty <= 0
+              ? current.filter((i) => i.foodId !== foodId)
+              : current.map((i) => (i.foodId === foodId ? { ...i, qty } : i));
+          tx.set(cartRef, { items: updated, updatedAt: serverTimestamp() });
+        });
+      } else {
+        const current = readLocalCart();
+        const updated =
+          qty <= 0
+            ? current.filter((i) => i.foodId !== foodId)
+            : current.map((i) => (i.foodId === foodId ? { ...i, qty } : i));
+        writeLocalCart(updated);
+        setItems(updated);
+      }
+    },
+    [uid],
+  );
 
-  const removeFromCart = useCallback((foodId) => updateQty(foodId, 0), [updateQty]);
+  const removeFromCart = useCallback(
+    (foodId) => updateQty(foodId, 0),
+    [updateQty],
+  );
 
   // ── clearCart ───────────────────────────────────────────────────
   const clearCart = useCallback(async () => {
     if (uid) {
       await runTransaction(db, async (tx) => {
-        tx.set(doc(db, "carts", uid), { items: [], updatedAt: serverTimestamp() });
+        tx.set(doc(db, "carts", uid), {
+          items: [],
+          updatedAt: serverTimestamp(),
+        });
       });
     } else {
       writeLocalCart([]);
@@ -134,11 +170,29 @@ export function CartProvider({ children }) {
     }
   }, [uid]);
 
+  const DELIVERY_FEE = 3;
+  const FREE_DELIVERY_LIMIT = 150;
   const cartCount = items.reduce((sum, i) => sum + i.qty, 0);
   const cartTotal = items.reduce((sum, i) => sum + i.qty * i.price, 0);
+  const deliveryFee = cartTotal >= FREE_DELIVERY_LIMIT ? 0 : DELIVERY_FEE;
+  const total = cartTotal + deliveryFee;
 
   return (
-    <CartContext.Provider value={{ uid, items, loading, addToCart, updateQty, removeFromCart, clearCart, cartCount, cartTotal }}>
+    <CartContext.Provider
+      value={{
+        uid,
+        items,
+        loading,
+        addToCart,
+        updateQty,
+        removeFromCart,
+        clearCart,
+        cartCount,
+        cartTotal,
+        deliveryFee,
+        total,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );
