@@ -7,12 +7,12 @@ import { useCart } from "@/context/CartContext";
 import CheckOut from "./CheckOut";
 import { RxCross1 } from "react-icons/rx";
 
-const ItemsPage = ({ check, setCheck }) => {
+const ItemsPage = () => {
     const [foods, setFoods] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedCategory, setSelectedCategory] = useState("All");
     const [addedIds, setAddedIds] = useState({});
-    const { addToCart } = useCart();
+    const { addToCart,check, setCheck } = useCart();
 
     const handleAddToCart = async (food) => {
         await addToCart(food, 1);

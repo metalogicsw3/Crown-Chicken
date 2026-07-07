@@ -1,7 +1,7 @@
 // src/components/AddtoCart.jsx 
 
 'use client';
-import { useState, useRef } from "react"; 
+import { useState, useRef } from "react";
 import { useCart } from "@/context/CartContext";
 import {
   MdChevronRight,
@@ -15,24 +15,36 @@ import {
   MdCalendarToday,
   MdDiscount,
 } from "react-icons/md";
-import { toast } from 'react-hot-toast'; 
-import { showToast } from "@/lib/toast"; 
+import { toast } from 'react-hot-toast';
+import { showToast } from "@/lib/toast";
 
-const AddtoCart = ({ setCheck }) => {
+const AddtoCart = () => {
 
-  const { items, loading, uid, updateQty, removeFromCart, clearCart, cartTotal, deliveryFee,
-    total} = useCart();
-  const [deliveryMethod, setDeliveryMethod] = useState("delivery");
-  const [discountCode, setDiscountCode] = useState("");
-  const [discount, setDiscount] = useState(0);
-  const toastId = useRef(null); 
+  const { 
+    items,
+    loading,
+    updateQty,
+    removeFromCart,
+    clearCart,
+    cartTotal,
+    check, 
+    setCheck,
 
-  const finalDeliveryFee = deliveryMethod === "pickup" ? 0 : deliveryFee;
-  const finalTotal = cartTotal + finalDeliveryFee - discount;
+    deliveryMethod,
+    setDeliveryMethod,
+
+    discount,
+    setDiscount,
+
+    deliveryFee,
+    total,
+   } = useCart();
+  
+  const toastId = useRef(null);
 
   //  with toast
   const handleApplyDiscount = () => {
-    if (discountCode.trim().toUpperCase() === "SAVE10") {
+    if (discount.trim().toUpperCase() === "SAVE10") {
       setDiscount(cartTotal * 0.1);
       showToast.success("Discount applied! 🎉");
     } else {
@@ -44,7 +56,7 @@ const AddtoCart = ({ setCheck }) => {
   // clear cart with toast
   const handleClearCart = () => {
     if (items.length === 0) return;
-    
+
     // Show confirmation toast
     const confirmId = toast.custom(
       (t) => (
@@ -73,7 +85,7 @@ const AddtoCart = ({ setCheck }) => {
           </div>
         </div>
       ),
-      { duration: Infinity } // Won't auto-dismiss
+      { duration: Infinity } 
     );
   };
 
@@ -111,7 +123,7 @@ const AddtoCart = ({ setCheck }) => {
           </h2>
           {items.length > 0 && (
             <button
-              onClick={handleClearCart} 
+              onClick={handleClearCart}
               className="text-xs text-gray-400 hover:text-red-500 transition"
             >
               Clear all
@@ -132,7 +144,6 @@ const AddtoCart = ({ setCheck }) => {
               <MdDeliveryDining className="text-lg" />
               <div className="text-left">
                 <div className="font-medium text-xs">Delivery</div>
-                <div className="text-[10px] text-gray-400">£3 minimum</div>
               </div>
             </button>
             <button
@@ -205,7 +216,7 @@ const AddtoCart = ({ setCheck }) => {
                   {/* Quantity Controls */}
                   <div className="flex items-center gap-1 bg-white rounded-lg border border-gray-200 px-1 py-0.5 shrink-0">
                     <button
-                      onClick={() => handleUpdateQty(item.foodId, item.qty - 1, item.name)} 
+                      onClick={() => handleUpdateQty(item.foodId, item.qty - 1, item.name)}
                       className="p-1 text-gray-600 hover:text-red-500 transition"
                       aria-label="Decrease quantity"
                     >
@@ -215,7 +226,7 @@ const AddtoCart = ({ setCheck }) => {
                       {item.qty}
                     </span>
                     <button
-                      onClick={() => handleUpdateQty(item.foodId, item.qty + 1, item.name)} 
+                      onClick={() => handleUpdateQty(item.foodId, item.qty + 1, item.name)}
                       className="p-1 text-gray-600 hover:text-green-600 transition"
                       aria-label="Increase quantity"
                     >
@@ -229,7 +240,7 @@ const AddtoCart = ({ setCheck }) => {
                       £{(item.price * item.qty).toFixed(2)}
                     </span>
                     <button
-                      onClick={() => handleRemoveItem(item.foodId, item.name)} 
+                      onClick={() => handleRemoveItem(item.foodId, item.name)}
                       className="text-gray-400 hover:text-red-600 transition"
                       aria-label={`Remove ${item.name}`}
                     >
@@ -252,8 +263,8 @@ const AddtoCart = ({ setCheck }) => {
                 <input
                   type="text"
                   placeholder="Enter discount code"
-                  value={discountCode}
-                  onChange={(e) => setDiscountCode(e.target.value)}
+                  value={discount}
+                  onChange={(e) => setDiscount(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleApplyDiscount()}
                   className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:border-black bg-gray-50"
                 />
@@ -282,7 +293,7 @@ const AddtoCart = ({ setCheck }) => {
                 </div>
                 <div className="flex justify-between text-gray-600">
                   <span>Delivery Fee</span>
-                  <span>£{finalDeliveryFee.toFixed(2)}</span>
+                  <span>£{deliveryFee.toFixed(2)}</span>
                 </div>
                 {discount > 0 && (
                   <div className="flex justify-between text-green-600">
@@ -293,7 +304,7 @@ const AddtoCart = ({ setCheck }) => {
                 <div className="border-y border-gray-200 py-1">
                   <div className="flex justify-between text-base font-bold text-gray-800">
                     <span>Total</span>
-                    <span>£{finalTotal.toFixed(2)}</span>
+                    <span>£{total.toFixed(2)}</span>
                   </div>
                 </div>
                 <div className="flex items-center justify-center py-1">

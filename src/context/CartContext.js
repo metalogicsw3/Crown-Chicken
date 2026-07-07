@@ -40,6 +40,9 @@ export function CartProvider({ children }) {
   const [uid, setUid] = useState(null); // null = guest
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [deliveryMethod, setDeliveryMethod] = useState("delivery");
+  const [discount, setDiscount] = useState(0);
+  const [check, setCheck] = useState(false);
 
   // Track auth state
   useEffect(() => {
@@ -174,7 +177,12 @@ export function CartProvider({ children }) {
   const FREE_DELIVERY_LIMIT = 150;
   const cartCount = items.reduce((sum, i) => sum + i.qty, 0);
   const cartTotal = items.reduce((sum, i) => sum + i.qty * i.price, 0);
-  const deliveryFee = cartTotal >= FREE_DELIVERY_LIMIT ? 0 : DELIVERY_FEE;
+  const deliveryFee =
+    deliveryMethod === "delivery"
+      ? cartTotal >= FREE_DELIVERY_LIMIT
+        ? 0
+        : DELIVERY_FEE
+      : 0;
   const total = cartTotal + deliveryFee;
 
   return (
@@ -189,6 +197,16 @@ export function CartProvider({ children }) {
         clearCart,
         cartCount,
         cartTotal,
+        
+        check,
+        setCheck,
+
+        deliveryMethod,
+        setDeliveryMethod,
+
+        discount,
+        setDiscount,
+
         deliveryFee,
         total,
       }}

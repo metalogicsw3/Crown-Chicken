@@ -11,7 +11,7 @@ import { showToast } from "@/lib/toast";
 import { useRef } from "react";
 
 
-const CheckOut = ({ setCheck }) => {
+const CheckOut = () => {
 
   // const router = useRouter();  
 
@@ -24,13 +24,24 @@ const CheckOut = ({ setCheck }) => {
   const [paymentMethod, setPaymentMethod] = useState('');
   const toastId = useRef(null);
   const {
+    uid,
     items,
     loading,
-    uid,
+    addToCart,
     updateQty,
     removeFromCart,
     clearCart,
+    cartCount,
     cartTotal,
+    check,
+    setCheck,
+
+    deliveryMethod,
+    setDeliveryMethod,
+
+    discount,
+    setDiscount,
+
     deliveryFee,
     total,
   } = useCart();
@@ -165,8 +176,8 @@ const CheckOut = ({ setCheck }) => {
                       className="flex  flex-col gap-1 px-3 py-2 "
                     >
                       <div className="flex ">
-                        <h3 className="font-medium text-gray-800 text-sm truncate min-w-60">
-                          {item.name}
+                        <h3 className="text-gray-800 text-sm truncate min-w-60">
+                          <span className="text-md font-medium">{item.name}</span><span className="font-semibold text-sm"> × {item.qty}</span>
                         </h3>
                         <p className="text-gray-600 font-medium text-sm">
                           £{item.price.toFixed(2)}
