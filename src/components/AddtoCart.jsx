@@ -29,6 +29,7 @@ const AddtoCart = () => {
     cartTotal,
     check, 
     setCheck,
+    openPopup,
 
     deliveryMethod,
     setDeliveryMethod,
@@ -309,7 +310,7 @@ const AddtoCart = () => {
                 </div>
                 <div className="flex items-center justify-center py-1">
                   <button
-                    onClick={() => { setCheck(true) }}
+                    onClick={() => { openPopup("CheckOut") }}
                     className="px-8 py-2 bg-black text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition">
                     Proceed to Check
                   </button>

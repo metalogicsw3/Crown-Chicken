@@ -6,6 +6,7 @@ import "./globals.css";
 import { AuthProvider } from "../context/AuthContext";
 import { CartProvider } from "../context/CartContext";
 import { Toaster } from "react-hot-toast";
+import DynamicPage from "@/components/DynamicPage";
 
 export const metadata = {
   icons: {
@@ -55,6 +56,8 @@ export default function RootLayout({ children }) {
                 },
               }}
             />
+             {/*Dynamic Popup*/}
+                <DynamicPage />
             <Footer />
           </CartProvider>
         </AuthProvider>

@@ -27,23 +27,10 @@ const CheckOut = () => {
     uid,
     items,
     loading,
-    addToCart,
-    updateQty,
-    removeFromCart,
     clearCart,
-    cartCount,
     cartTotal,
-    check,
-    setCheck,
-
-    deliveryMethod,
-    setDeliveryMethod,
-
-    discount,
-    setDiscount,
-
-    deliveryFee,
     total,
+    closePopup,
   } = useCart();
 
   const saveData = async (e) => {
@@ -92,7 +79,7 @@ const CheckOut = () => {
 
       // router.push("/"); <== For Page Routing 
       clearCart();
-      setCheck(false);
+      closePopup();
 
     } catch (error) {
       console.error(error);
@@ -102,9 +89,8 @@ const CheckOut = () => {
   }
 
   return (
-    <div className="lg:max-w-150 h-180 overflow-y-auto">
-      <div className="p-2">
-        <form onSubmit={saveData} className="flex flex-col gap-3">
+    <div className="lg:max-w-96 h-180 overflow-y-auto  ">
+        <form onSubmit={saveData} className="flex flex-col gap-3 ">
           <h2 className="text-2xl font-semibold">Billing & Shipping</h2>
           <div className="grid lg:grid-cols-2 gap-4">
 
@@ -227,15 +213,15 @@ const CheckOut = () => {
                 <span className="font-semibold">privacy policy.</span>
               </p>
             </div>
-          </div>
-          {/* Submit Button */}
-          <div className="flex justify-end">
+            <div className="flex justify-end">
             <button type="submit" className="bg-orange-500 hover:bg-orange-600 font-semibold text-white px-5 py-2 cursor-pointer rounded-sm">
               PLACE ORDER
             </button>
           </div>
+          </div>
+          {/* Submit Button */}
+          
         </form>
-      </div>
     </div>
   );
 };

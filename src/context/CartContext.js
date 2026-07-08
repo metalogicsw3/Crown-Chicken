@@ -44,6 +44,8 @@ export function CartProvider({ children }) {
   const [discount, setDiscount] = useState(0);
   const [check, setCheck] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
+  const [popupOpen, setPopupOpen] = useState(false);
+  const [popupContent, setPopupContent] = useState("");
 
   // Track auth state
   useEffect(() => {
@@ -174,6 +176,15 @@ export function CartProvider({ children }) {
     }
   }, [uid]);
 
+  const openPopup = (content) => {
+    setPopupContent(content);
+    setPopupOpen(true);
+  };
+  const closePopup = () => {
+    setPopupOpen(false);
+    setPopupContent("");
+  };
+
   const DELIVERY_FEE = 3;
   const FREE_DELIVERY_LIMIT = 150;
   const cartCount = items.reduce((sum, i) => sum + i.qty, 0);
@@ -198,6 +209,12 @@ export function CartProvider({ children }) {
         clearCart,
         cartCount,
         cartTotal,
+
+        popupOpen,
+        popupContent,
+
+        openPopup,
+        closePopup,
 
         check,
         setCheck,

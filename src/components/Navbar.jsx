@@ -15,7 +15,7 @@ import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { useCart } from "@/context/CartContext";
 
 export default function Navbar() {
-  const { userOpen, setUserOpen } = useCart();
+  const { userOpen, setUserOpen, openPopup } = useCart();
 
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState(null);
@@ -125,14 +125,14 @@ export default function Navbar() {
                 {/* Dropdown */}
                 <div
                   className={`absolute top-full right-0 mt-3 w-44 origin-top bg-white rounded-lg border shadow-lg z-50 transition-all duration-900 ease-in-out
-                    ${
-                      userOpen
-                        ? "opacity-100 scale-y-100 visible"
-                        : "opacity-0 scale-y-95 invisible pointer-events-none"
+                    ${userOpen
+                      ? "opacity-100 scale-y-100 visible"
+                      : "opacity-0 scale-y-95 invisible pointer-events-none"
                     }
                   `}
                 >
-                  <button className="block w-full rounded-lg text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
+                  <button onClick={() => openPopup("profile")} 
+                  className="block w-full rounded-lg text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
                     Profile
                   </button>
 

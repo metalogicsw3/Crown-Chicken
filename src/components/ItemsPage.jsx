@@ -4,15 +4,13 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Loader2, Image as ImageIcon, Utensils, ShoppingCart } from "lucide-react";
 import { useCart } from "@/context/CartContext";
-import CheckOut from "./CheckOut";
-import { RxCross1 } from "react-icons/rx";
 
 const ItemsPage = () => {
     const [foods, setFoods] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedCategory, setSelectedCategory] = useState("All");
     const [addedIds, setAddedIds] = useState({});
-    const { addToCart,check, setCheck } = useCart();
+    const { addToCart } = useCart();
 
     const handleAddToCart = async (food) => {
         await addToCart(food, 1);
@@ -197,22 +195,6 @@ const ItemsPage = () => {
                 </div>
             ))}
 
-            {check && <div
-                className="fixed inset-0 z-50 p-10 bg-black/50 backdrop-blur-xl flex items-center justify-center">
-                <div className="bg-white p-5 rounded">
-                    <div className="flex justify-end">
-                        <button
-                            onClick={() => setCheck(false)}
-                            className="px-3 py-1 rounded"
-                        >
-                            <RxCross1 className="hover:scale-120 transition" size={25} />
-                        </button>
-                    </div>
-
-                    <CheckOut setCheck={setCheck} />
-                </div>
-            </div>}
-
             {filteredFoods.length === 0 && (
                 <div className="text-center py-16 bg-white rounded-2xl shadow-lg border border-gray-100">
                     <div className="text-4xl mb-4">🔍</div>
@@ -220,6 +202,7 @@ const ItemsPage = () => {
                     <p className="text-gray-500">Try selecting a different category</p>
                 </div>
             )}
+
         </div>
     );
 };
