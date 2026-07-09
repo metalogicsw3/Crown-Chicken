@@ -37,11 +37,12 @@ function writeLocalCart(items) {
 
 // ─────────────────────────────────────────────────────────────────
 export function CartProvider({ children }) {
-  const [uid, setUid] = useState(null); // null = guest
   const [items, setItems] = useState([]);
+  const [uid, setUid] = useState(null); // null = guest
   const [loading, setLoading] = useState(true);
   const [deliveryMethod, setDeliveryMethod] = useState("delivery");
-  const [discount, setDiscount] = useState(0);
+  const [discountCode, setDiscountCode] = useState("");
+  const [discountAmount, setDiscountAmount] = useState(0);
   const [check, setCheck] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
@@ -195,7 +196,7 @@ export function CartProvider({ children }) {
         ? 0
         : DELIVERY_FEE
       : 0;
-  const total = cartTotal + deliveryFee;
+  const total = cartTotal + deliveryFee - discountAmount;
 
   return (
     <CartContext.Provider
@@ -222,8 +223,11 @@ export function CartProvider({ children }) {
         deliveryMethod,
         setDeliveryMethod,
 
-        discount,
-        setDiscount,
+        discountCode,
+        setDiscountCode,
+
+        discountAmount,
+        setDiscountAmount,
 
         deliveryFee,
         total,

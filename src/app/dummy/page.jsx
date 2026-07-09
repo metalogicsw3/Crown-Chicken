@@ -1,11 +1,12 @@
 // src/components/Popup.jsx
 "use client";
 
-import { useCart } from "@/context/CartContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
-export default function Popup() {
-  const {  } = useCart();
+
+export default function Dummy() {
 
   return (
     <div className="inset-0 w-full h-90 bg-neutral-200 text-center">

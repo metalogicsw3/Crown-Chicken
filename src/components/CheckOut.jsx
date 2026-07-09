@@ -89,7 +89,7 @@ const CheckOut = () => {
   }
 
   return (
-    <div className="lg:max-w-96 h-180 overflow-y-auto  ">
+    <div className="lg:max-w-150 h-180 overflow-y-auto  ">
         <form onSubmit={saveData} className="flex flex-col gap-3 ">
           <h2 className="text-2xl font-semibold">Billing & Shipping</h2>
           <div className="grid lg:grid-cols-2 gap-4">

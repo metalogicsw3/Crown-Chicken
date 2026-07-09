@@ -20,39 +20,39 @@ import { showToast } from "@/lib/toast";
 
 const AddtoCart = () => {
 
-  const { 
+  const {
     items,
     loading,
     updateQty,
     removeFromCart,
     clearCart,
     cartTotal,
-    check, 
-    setCheck,
     openPopup,
 
     deliveryMethod,
     setDeliveryMethod,
 
-    discount,
-    setDiscount,
-
+    discountCode,
+    setDiscountCode,
+    discountAmount,
+    setDiscountAmount,
     deliveryFee,
     total,
-   } = useCart();
-  
+  } = useCart();
+
   const toastId = useRef(null);
 
   //  with toast
-  const handleApplyDiscount = () => {
-    if (discount.trim().toUpperCase() === "SAVE10") {
-      setDiscount(cartTotal * 0.1);
-      showToast.success("Discount applied! 🎉");
+ const handleApplyDiscount = () => {
+    if (discountCode.trim().toUpperCase() === "SAVE10") {
+        setDiscountAmount(cartTotal * 0.1);
+        showToast.success("Discount applied! 🎉");
+        setDiscountCode('')
     } else {
-      showToast.error("Invalid discount code.");
-      setDiscount(0);
+        setDiscountAmount(0);
+        showToast.error("Invalid discount code.");
     }
-  };
+};
 
   // clear cart with toast
   const handleClearCart = () => {
@@ -86,7 +86,7 @@ const AddtoCart = () => {
           </div>
         </div>
       ),
-      { duration: Infinity } 
+      { duration: Infinity }
     );
   };
 
@@ -264,8 +264,8 @@ const AddtoCart = () => {
                 <input
                   type="text"
                   placeholder="Enter discount code"
-                  value={discount}
-                  onChange={(e) => setDiscount(e.target.value)}
+                  value={discountCode}
+                  onChange={(e) => setDiscountCode(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleApplyDiscount()}
                   className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:border-black bg-gray-50"
                 />
@@ -296,10 +296,10 @@ const AddtoCart = () => {
                   <span>Delivery Fee</span>
                   <span>£{deliveryFee.toFixed(2)}</span>
                 </div>
-                {discount > 0 && (
+                {discountAmount  > 0 && (
                   <div className="flex justify-between text-green-600">
                     <span>Discount</span>
-                    <span>-£{discount.toFixed(2)}</span>
+                    <span>-£{discountAmount .toFixed(2)}</span>
                   </div>
                 )}
                 <div className="border-y border-gray-200 py-1">
