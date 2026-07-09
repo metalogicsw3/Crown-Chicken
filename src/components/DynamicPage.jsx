@@ -1,37 +1,37 @@
-// src/components/DynamicPage.jsx
 'use client';
 import { useCart } from '@/context/CartContext'
 import CheckOut from './CheckOut'
+import TestingPage from './TestingPage'
 import ProfilePage from './ProfilePage';
 import CloseComp from './CloseComp';
+import OrderListPage from './OrderListPage';
 
 const DynamicPage = () => {
-
-  const {
-    popupOpen,
-    popupContent,
-    closePopup,
-  } = useCart();
+  const { popupOpen, popupContent, closePopup } = useCart();
 
   const popupComponents = {
     profile: <ProfilePage />,
-    CheckOut: <CheckOut />
+    CheckOut: <CheckOut />, 
+    orderList: <OrderListPage />,
+    // <TestingPage/> 
   };
 
   if (!popupOpen) return null;
 
   return (
-<div className="fixed w-full h-full inset-0 z-50 bg-black/40 backdrop-blur-xl flex items-center justify-center">
-  <div className="relative px-5 py-10 w-180 h-200 overflow-clip flex flex-col items-center gap-10 bg-white rounded-xl">
+    <div className="fixed w-full h-full inset-0 z-50 bg-black/40 backdrop-blur-xl flex items-center justify-center p-4">
+      <div className="relative w-full max-w-3xl h-[90vh] flex flex-col bg-white rounded-xl shadow-xl overflow-hidden">
 
-    <div className="absolute top-4 right-4">
-      <CloseComp />
+        <div className="absolute top-4 right-5 z-10">
+          <CloseComp />
+        </div>
+
+        <div className="flex-1 min-h-0">
+          {popupComponents[popupContent]}
+        </div>
+
+      </div>
     </div>
-
-    {popupComponents[popupContent]}
-
-  </div>
-</div>
   )
 }
 

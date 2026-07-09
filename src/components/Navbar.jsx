@@ -136,7 +136,8 @@ export default function Navbar() {
                     Profile
                   </button>
 
-                  <button className="block w-full rounded-lg text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
+                  <button onClick={() => openPopup("orderList")} 
+                  className="block w-full rounded-lg text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
                     Order list
                   </button>
                 </div>
