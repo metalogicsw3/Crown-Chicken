@@ -1,5 +1,4 @@
 // src/components/CheckOut 
-
 "use client";
 
 import { useState } from "react";
@@ -89,7 +88,7 @@ const CheckOut = () => {
   }
 
   return (
-    <div className="h-full overflow-y-auto ">
+    <div className="h-[92vh] overflow-y-auto ">
       <form onSubmit={saveData} className="flex flex-col gap-3 p-10">
         <h2 className="text-2xl font-semibold">Billing & Shipping</h2>
         <div className="grid lg:grid-cols-2 gap-4">

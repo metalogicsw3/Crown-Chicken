@@ -12,7 +12,7 @@ export default function Home() {
         <ItemsPage />
       </div>
 
-      <div className="w-full lg:w-auto lg:shrink-0">
+      <div className="w-full min-h-0 h-[90vh] lg:w-auto lg:shrink-0">
         <AddtoCart />
       </div>
     </div>

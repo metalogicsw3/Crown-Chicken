@@ -5,7 +5,7 @@ import CheckOut2 from "@/components/TestingPage"
 const Dummy = () => {
   return (
     <div>
-      <CheckOut2 />
+     This is Dummy Page not Component
     </div>
   )
 }

@@ -10,8 +10,8 @@ const DynamicPage = () => {
   const { popupOpen, popupContent, closePopup } = useCart();
 
   const popupComponents = {
-    profile: <ProfilePage />,
     CheckOut: <CheckOut />, 
+    profile: <ProfilePage />,
     orderList: <OrderListPage />,
     // <TestingPage/> 
   };
@@ -20,7 +20,7 @@ const DynamicPage = () => {
 
   return (
     <div className="fixed w-full h-full inset-0 z-50 bg-black/40 backdrop-blur-xl flex items-center justify-center p-4">
-      <div className="relative w-full max-w-3xl h-[90vh] flex flex-col bg-white rounded-xl shadow-xl overflow-hidden">
+      <div className="relative w-full max-w-3xl flex flex-col bg-white rounded-xl shadow-xl overflow-hidden">
 
         <div className="absolute top-4 right-5 z-10">
           <CloseComp />

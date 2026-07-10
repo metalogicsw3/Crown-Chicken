@@ -108,8 +108,8 @@ const AddtoCart = () => {
   };
 
   return (
-    <div className="w-full py-2 ">
-      <div className="w-full h-auto  max-w-md max-h-screen flex flex-col rounded-lg bg-white shadow-xl border-l border-gray-200 overflow-hidden">
+    <div className="w-full h-full py-2 ">
+      <div className="w-full h-[88vh] overflow-y-auto max-w-md max-h-screen flex flex-col rounded-lg bg-white shadow-md border border-gray-300 ">
 
         {/* Header */}
         <div className="p-2 border-b border-gray-200 shrink-0 flex items-center justify-between">

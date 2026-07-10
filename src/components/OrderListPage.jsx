@@ -40,7 +40,7 @@ export default function OrderListPage() {
   }, []);
 
   return (
-    <div className="h-full w-full overflow-y-auto px-6 pt-8">
+    <div className="h-[90vh] w-full overflow-y-auto px-6 pt-8 ">
       <h1 className="text-2xl font-bold text-gray-700 text-center mb-6">
         My Orders
       </h1>
@@ -61,7 +61,7 @@ export default function OrderListPage() {
                     {formatDate(order.createAt)}
                   </p>
                 </div>
-                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full whitespace-nowrap">
+                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-lg whitespace-nowrap">
                   {order.paymentMethod}
                 </span>
               </div>
