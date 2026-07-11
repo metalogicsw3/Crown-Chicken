@@ -1,10 +1,13 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from "react";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { toast } from "react-hot-toast";
+import { IoMdPerson,IoIosMail } from "react-icons/io";
+import { FaKey } from "react-icons/fa";
+import { SiGooglemaps } from "react-icons/si";
 
 const ProfilePage = () => {
   const [profile, setProfile] = useState({
@@ -75,81 +78,91 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="flex items-center justify-center h-[88vh] bg-gray-100 px-4">
-      <div className="w-full max-w-md rounded-xl bg-white shadow-lg border p-6">
-
-        <h2 className="text-2xl font-bold text-center mb-6">
-          My Profile
-        </h2>
-
-        {/* Name */}
-        <div className="mb-4">
-          <label className="block mb-2 text-sm font-medium">
-            Name
-          </label>
-
-          <input
-            type="text"
-            name="name"
-            value={profile.name}
-            onChange={handleChange}
-            readOnly={!isEditing}
-            className={`w-full rounded-lg border px-4 py-2 outline-none transition ${
-              isEditing
-                ? "border-blue-500 focus:ring-2 focus:ring-blue-300"
-                : "bg-gray-100 cursor-not-allowed"
-            }`}
-          />
-        </div>
-
-        {/* Email */}
-        <div className="mb-6">
-          <label className="block mb-2 text-sm font-medium">
-            Email
-          </label>
-
-          <input
-            type="email"
-            name="email"
-            value={profile.email}
-            onChange={handleChange}
-            readOnly={!isEditing}
-            className={`w-full rounded-lg border px-4 py-2 outline-none transition ${
-              isEditing
-                ? "border-blue-500 focus:ring-2 focus:ring-blue-300"
-                : "bg-gray-100 cursor-not-allowed"
-            }`}
-          />
-        </div>
-
-        {/* Buttons */}
-        {!isEditing ? (
-          <button
-            onClick={() => setIsEditing(true)}
-            className="w-full rounded-lg bg-blue-600 py-2 text-white font-semibold hover:bg-blue-700 transition"
-          >
-            Edit Profile
-          </button>
-        ) : (
-          <div className="flex gap-3">
-            <button
-              onClick={handleUpdate}
-              className="flex-1 rounded-lg bg-green-600 py-2 text-white font-semibold hover:bg-green-700 transition"
-            >
-              Save
-            </button>
-
-            <button
-              onClick={() => setIsEditing(false)}
-              className="flex-1 rounded-lg bg-gray-500 py-2 text-white font-semibold hover:bg-gray-600 transition"
-            >
-              Cancel
-            </button>
+    <div className="flex bg-gray-100 p-5">
+      <div className="w-full space-y-3">
+        {/*Info Section */}
+        <div className="flex gap-3 ">
+          <div className="border border-gray-400 rounded-full p-1 text-center">
+            <span className="text-gray-600"> image</span> 
           </div>
-        )}
+          <div className="">
+            <h2 className="text-2xl font-semibold">{profile.name}</h2>
+            <p className="text-gray-500 text-sm">{profile.email}</p>
+          </div>
+        </div>
+
+      <hr className="text-gray-300" />
+
+        {/*Edit  Section */}
+        <form className="py-2 grid gap-8 grid-cols-2">
+
+          <div className="space-y-1">
+            <label className="flex items-center gap-1">
+              <IoMdPerson size={18} className="text-blue-700" />
+              Name
+            </label>
+            <div className="relative">
+              <IoMdPerson className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl" />
+              <input
+               onChange={() => {}}
+                type="text"
+                value={profile.name}
+                className="w-full border border-gray-400 rounded-lg py-2 pl-10 pr-3"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <label className="flex items-center gap-1">
+              <IoIosMail size={18} className="text-blue-700" />
+              Email
+            </label>
+            <div className="relative">
+              <IoIosMail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl" />
+              <input
+               onChange={() => {}}
+                type="text"
+                value={profile.email}
+                className="w-full border border-gray-400 rounded-lg py-2 pl-10 pr-3"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <label className="flex items-center gap-1">
+              <FaKey size={18} className="text-blue-700" />
+              Password
+            </label>
+            <div className="relative">
+              <FaKey className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl" />
+              <input
+               onChange={() => {}}
+                type="text"
+                value={profile.name}
+                className="w-full border border-gray-400 rounded-lg py-2 pl-10 pr-3"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <label className="flex items-center gap-1">
+              <SiGooglemaps size={18} className="text-blue-700" />
+              Address
+            </label>
+            <div className="relative">
+              <SiGooglemaps className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl" />
+              <input
+               onChange={() => {}}
+                type="text"
+                value={profile.name}
+                className="w-full border border-gray-400 rounded-lg py-2 pl-10 pr-3"
+              />
+            </div>
+          </div>
+          <button type="submit" className="w-full col-span-2 font-semibold bg-blue-700 text-white py-2 rounded-lg cursor-pointer hover:bg-blue-800">Update Profile</button>
+        </form>
       </div>
     </div>
   );
 };
-
 export default ProfilePage;
