@@ -9,6 +9,7 @@ import { IoMdPerson,IoIosMail } from "react-icons/io";
 import { FaKey } from "react-icons/fa";
 import { SiGooglemaps } from "react-icons/si";
 import { BsTelephoneFill } from "react-icons/bs";
+import { useRouter } from "next/navigation";
 
 const ProfilePage = () => {
   const [profile, setProfile] = useState({
@@ -16,13 +17,17 @@ const ProfilePage = () => {
     email: "",
   });
 
+
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
+
+  const router = useRouter();
 
   // Fetch User Profile
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
+        router.push('/');
         setLoading(false);
         return;
       }
@@ -114,7 +119,7 @@ const ProfilePage = () => {
                onChange={handleChange}
                onFocus={() => setIsEditing(true)}
                 readOnly={!isEditing}
-                className="w-full border border-gray-400 rounded-lg py-2 pl-10 pr-3 focus:border-blue-500 focus:outline-none focus:ring-0"   />
+                className="w-full hover:bg-gray-200 border border-gray-400 rounded-lg py-2 pl-10 pr-3 focus:border-blue-500 focus:outline-none focus:ring-0"   />
             </div>
           </div>
 
@@ -130,7 +135,7 @@ const ProfilePage = () => {
                 type="email"
                 value={profile.email}
                 disabled={!isEditing}
-                className="w-full border border-gray-400 rounded-lg py-2 pl-10 pr-3 focus:border-blue-500 focus:outline-none focus:ring-0"
+                className="w-full hover:bg-gray-200 border border-gray-400 rounded-lg py-2 pl-10 pr-3 focus:border-blue-500 focus:outline-none focus:ring-0"
               />
             </div>
           </div>
@@ -146,7 +151,7 @@ const ProfilePage = () => {
                onChange={() => {}}
                 type="text"
                 value={""}
-                className="w-full border border-gray-400 rounded-lg py-2 pl-10 pr-3 focus:border-blue-500 focus:outline-none focus:ring-0"
+                className="w-full hover:bg-gray-200 border border-gray-400 rounded-lg py-2 pl-10 pr-3 focus:border-blue-500 focus:outline-none focus:ring-0"
               />
             </div>
           </div>
@@ -162,7 +167,7 @@ const ProfilePage = () => {
                onChange={() => {}}
                 type="text"
                 value={""}
-                className="w-full border border-gray-400 rounded-lg py-2 pl-10 pr-3 focus:border-blue-500 focus:outline-none focus:ring-0"
+                className="w-full hover:bg-gray-200 border border-gray-400 rounded-lg py-2 pl-10 pr-3 focus:border-blue-500 focus:outline-none focus:ring-0"
               />
             </div>
           </div>
@@ -178,14 +183,13 @@ const ProfilePage = () => {
                onChange={() => {}}
                 type="text"
                 value={""}
-                className="w-full border border-gray-400 rounded-lg py-2 pl-10 pr-3 focus:border-blue-500 focus:outline-none focus:ring-0"
+                className="w-full hover:bg-gray-200 border border-gray-400 rounded-lg py-2 pl-10 pr-3 focus:border-blue-500 focus:outline-none focus:ring-0"
               />
             </div>
             {/* Abu Bakar ki purzoor farmaish par add kia ha */}
             {/* <textarea name="information" className="text-xs border border-gray-400 mt-5 rounded-lg w-full h-40" placeholder="User GirlFriend Information" id=""></textarea> */}
           </div>
-          
-          <button type="submit" className="w-full col-span-2 font-semibold bg-blue-700 text-white py-2 rounded-lg cursor-pointer hover:bg-blue-800">Update Profile</button>
+          <button type="submit" className="w-full col-span-2 font-semibold bg-blue-900 text-white py-2 rounded-lg cursor-pointer hover:bg-blue-700">Update Profile</button>
         </form>
       </div>
     </div>
