@@ -8,6 +8,7 @@ import { toast } from "react-hot-toast";
 import { IoMdPerson,IoIosMail } from "react-icons/io";
 import { FaKey } from "react-icons/fa";
 import { SiGooglemaps } from "react-icons/si";
+import { BsTelephoneFill } from "react-icons/bs";
 
 const ProfilePage = () => {
   const [profile, setProfile] = useState({
@@ -78,8 +79,8 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="flex bg-gray-100 p-5">
-      <div className="w-full space-y-3">
+    <div className="flex justify-center items-center bg-gray-100 p-5">
+      <div className="flex flex-col justify-center mx-auto gap-3 p-5 hover:shadow-xl max-w-xl h-[60vh] border border-gray-300 rounded-lg">
         {/*Info Section */}
         <div className="flex gap-3 ">
           <div className="border border-gray-400 rounded-full p-1 text-center">
@@ -94,7 +95,10 @@ const ProfilePage = () => {
       <hr className="text-gray-300" />
 
         {/*Edit  Section */}
-        <form className="py-2 grid gap-8 grid-cols-2">
+        <form onSubmit={ (e) => {
+          e.preventDefault();
+          handleUpdate()
+        }} className="py-2 grid gap-8 grid-cols-2">
 
           <div className="space-y-1">
             <label className="flex items-center gap-1">
@@ -104,11 +108,13 @@ const ProfilePage = () => {
             <div className="relative">
               <IoMdPerson className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl" />
               <input
-               onChange={() => {}}
                 type="text"
+                name="name"
                 value={profile.name}
-                className="w-full border border-gray-400 rounded-lg py-2 pl-10 pr-3"
-              />
+               onChange={handleChange}
+               onFocus={() => setIsEditing(true)}
+                readOnly={!isEditing}
+                className="w-full border border-gray-400 rounded-lg py-2 pl-10 pr-3 focus:border-blue-500 focus:outline-none focus:ring-0"   />
             </div>
           </div>
 
@@ -121,9 +127,10 @@ const ProfilePage = () => {
               <IoIosMail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl" />
               <input
                onChange={() => {}}
-                type="text"
+                type="email"
                 value={profile.email}
-                className="w-full border border-gray-400 rounded-lg py-2 pl-10 pr-3"
+                disabled={!isEditing}
+                className="w-full border border-gray-400 rounded-lg py-2 pl-10 pr-3 focus:border-blue-500 focus:outline-none focus:ring-0"
               />
             </div>
           </div>
@@ -138,8 +145,8 @@ const ProfilePage = () => {
               <input
                onChange={() => {}}
                 type="text"
-                value={profile.name}
-                className="w-full border border-gray-400 rounded-lg py-2 pl-10 pr-3"
+                value={""}
+                className="w-full border border-gray-400 rounded-lg py-2 pl-10 pr-3 focus:border-blue-500 focus:outline-none focus:ring-0"
               />
             </div>
           </div>
@@ -154,11 +161,30 @@ const ProfilePage = () => {
               <input
                onChange={() => {}}
                 type="text"
-                value={profile.name}
-                className="w-full border border-gray-400 rounded-lg py-2 pl-10 pr-3"
+                value={""}
+                className="w-full border border-gray-400 rounded-lg py-2 pl-10 pr-3 focus:border-blue-500 focus:outline-none focus:ring-0"
               />
             </div>
           </div>
+
+          <div className="space-y-1">
+            <label className="flex items-center gap-1">
+              <BsTelephoneFill size={18} className="text-blue-700" />
+              Contact Number 
+            </label>
+            <div className="relative">
+              <BsTelephoneFill className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl" />
+              <input
+               onChange={() => {}}
+                type="text"
+                value={""}
+                className="w-full border border-gray-400 rounded-lg py-2 pl-10 pr-3 focus:border-blue-500 focus:outline-none focus:ring-0"
+              />
+            </div>
+            {/* Abu Bakar ki purzoor farmaish par add kia ha */}
+            {/* <textarea name="information" className="text-xs border border-gray-400 mt-5 rounded-lg w-full h-40" placeholder="User GirlFriend Information" id=""></textarea> */}
+          </div>
+          
           <button type="submit" className="w-full col-span-2 font-semibold bg-blue-700 text-white py-2 rounded-lg cursor-pointer hover:bg-blue-800">Update Profile</button>
         </form>
       </div>

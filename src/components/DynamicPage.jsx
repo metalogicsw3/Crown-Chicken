@@ -6,13 +6,14 @@ import ProfilePage from './ProfilePage';
 import CloseComp from './CloseComp';
 import OrderListPage from './OrderListPage';
 
+
 const DynamicPage = () => {
   const { popupOpen, popupContent, closePopup } = useCart();
 
   const popupComponents = {
     CheckOut: <CheckOut />, 
-    profile: <ProfilePage />,
     orderList: <OrderListPage />,
+    // profile: <ProfilePage  />,
     // <TestingPage/> 
   };
 

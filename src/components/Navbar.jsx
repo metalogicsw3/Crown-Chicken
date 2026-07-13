@@ -1,5 +1,5 @@
 // src/components/Navbar.jsx
-'use client';
+"use client";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -13,6 +13,8 @@ import { toast } from "react-hot-toast";
 import { showToast } from "@/lib/toast";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { useCart } from "@/context/CartContext";
+import { IoPersonCircleSharp } from "react-icons/io5";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   const { userOpen, setUserOpen, openPopup } = useCart();
@@ -21,6 +23,8 @@ export default function Navbar() {
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [logoutLoading, setLogoutLoading] = useState(false);
+
+  const router = useRouter();
 
   // Dropdown Ref
   const dropdownRef = useRef(null);
@@ -38,10 +42,7 @@ export default function Navbar() {
   // Close dropdown on outside click
   useEffect(() => {
     function handleClickOutside(event) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setUserOpen(false);
       }
     }
@@ -62,13 +63,13 @@ export default function Navbar() {
       await logoutUser();
 
       toast.dismiss(toastId);
+      router.push("/");
+      setUserOpen(!userOpen);
       showToast.success("Logged out successfully! 👋");
     } catch (err) {
       console.error("Logout error:", err);
 
-      showToast.error(
-        `Logout failed: ${err.message || "Please try again"}`
-      );
+      showToast.error(`Logout failed: ${err.message || "Please try again"}`);
     } finally {
       setLogoutLoading(false);
     }
@@ -78,7 +79,6 @@ export default function Navbar() {
     <>
       <nav className="bg-blue-900 text-white shadow-md sticky top-0 z-50">
         <div className="min-w-auto w-auto mx-auto px-2 py-3 flex items-center justify-between">
-
           {/* Logo */}
           <Link
             href="/"
@@ -91,7 +91,6 @@ export default function Navbar() {
               height={40}
               className="object-contain rounded-md"
             />
-
             Crown Chicken
           </Link>
 
@@ -112,44 +111,50 @@ export default function Navbar() {
                 {/* User Button */}
                 <button
                   onClick={() => setUserOpen(!userOpen)}
-                  className="bg-white text-blue-900 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50 transition-colors"
+                  className="bg-white text-blue-900 rounded-full text-sm font-medium hover:bg-blue-50 transition-colors"
                 >
-                  <div className="flex items-center gap-2">
-                    User
-                    <span>
-                      {userOpen ? <FaChevronUp /> : <FaChevronDown />}
-                    </span>
-                  </div>
+                  {" "}
+                  <IoPersonCircleSharp size={28} />
+                  <div className="flex items-center gap-2"></div>
                 </button>
 
                 {/* Dropdown */}
                 <div
                   className={`absolute top-full right-0 mt-3 w-44 origin-top bg-white rounded-lg border shadow-lg z-50 transition-all duration-900 ease-in-out
-                    ${userOpen
-                      ? "opacity-100 scale-y-100 visible"
-                      : "opacity-0 scale-y-95 invisible pointer-events-none"
+                    ${
+                      userOpen
+                        ? "opacity-100 scale-y-100 visible"
+                        : "opacity-0 scale-y-95 invisible pointer-events-none"
                     }
                   `}
                 >
-                  <button onClick={() => openPopup("profile")} 
-                  className="block w-full rounded-lg text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
+                  <button
+                    onClick={() => {
+                      (router.push("/profile"), setUserOpen(!userOpen));
+                    }}
+                    className="block w-full rounded-lg text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                  >
                     Profile
                   </button>
 
-                  <button onClick={() => openPopup("orderList")} 
-                  className="block w-full rounded-lg text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
+                  <button
+                    onClick={() => {
+                      (openPopup("orderList"), setUserOpen(!userOpen));
+                    }}
+                    className="block w-full rounded-lg text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                  >
                     Order list
+                  </button>
+                  <button
+                    onClick={handleLogout}
+                    disabled={logoutLoading}
+                    className="block w-full rounded-lg text-left px-4 py-2 text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {logoutLoading ? "Logging out..." : "Logout"}
                   </button>
                 </div>
 
                 {/* Logout Button */}
-                <button
-                  onClick={handleLogout}
-                  disabled={logoutLoading}
-                  className="bg-white text-blue-900 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {logoutLoading ? "Logging out..." : "Logout"}
-                </button>
               </div>
             ) : (
               <button
@@ -163,10 +168,7 @@ export default function Navbar() {
         </div>
       </nav>
 
-      <AuthModal
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-      />
+      <AuthModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </>
   );
 }

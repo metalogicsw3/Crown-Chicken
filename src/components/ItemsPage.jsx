@@ -131,12 +131,12 @@ const ItemsPage = () => {
                             {items.length}
                         </span>
                     </h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6 lg:gap-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
                         {items.map((food) => (
                             /*--- Cards Section ---*/
                             <div
                                 key={food.id}
-                                className="group w-full bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
+                                className="flex flex-col justify-between h-55 bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
                             >
                                 <div className="relative h-48 sm:h-25 bg-linear-to-br from-gray-50 to-gray-100 overflow-hidden">
                                     {food.imageUrl ? (
