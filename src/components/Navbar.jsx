@@ -11,7 +11,6 @@ import SearchBar from "./SearchBar";
 import AuthModal from "./AuthModal";
 import { toast } from "react-hot-toast";
 import { showToast } from "@/lib/toast";
-import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { useCart } from "@/context/CartContext";
 import { IoPersonCircleSharp } from "react-icons/io5";
 import { useRouter } from "next/navigation";

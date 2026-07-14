@@ -4,6 +4,7 @@ import { useState, useRef } from "react"; // ✅ Added useRef
 import { signupUser } from "@/lib/auth";
 import { toast } from 'react-hot-toast'; // ✅ Added
 import { showToast } from "@/lib/toast"; // ✅ Added
+import { CgArrowLeft } from "react-icons/cg";
 
 export default function SignupForm({ setView, onClose }) {
     const [name, setName] = useState("");
@@ -77,33 +78,37 @@ export default function SignupForm({ setView, onClose }) {
     };
 
     return (
-        <form onSubmit={handleSignup}>
+        <form onSubmit={handleSignup} autoComplete="off">
             <h2 className="text-3xl font-bold mb-6">
                 Create Account
             </h2>
 
+            <div className="flex flex-col gap-5"> 
             <input
                 type="text"
                 placeholder="Name"
-                className="w-full border p-3 rounded-lg mb-4"
+                className="w-full hover:bg-gray-200 border border-gray-400 rounded-lg py-2 px-5 focus:border-blue-500 focus:outline-none focus:ring-0"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                autoComplete="off"
             />
 
             <input
                 type="email"
                 placeholder="Email"
-                className="w-full border p-3 rounded-lg mb-4"
+                className="w-full hover:bg-gray-200 border border-gray-400 rounded-lg py-2 px-5 focus:border-blue-500 focus:outline-none focus:ring-0"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                autoComplete="new-email"
             />
 
             <input
                 type="password"
                 placeholder="Password"
-                className="w-full border p-3 rounded-lg mb-4"
+                className="w-full hover:bg-gray-200 border border-gray-400 rounded-lg py-2 px-5 focus:border-blue-500 focus:outline-none focus:ring-0"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                autoComplete="new-password"
             />
 
             <button
@@ -113,14 +118,18 @@ export default function SignupForm({ setView, onClose }) {
             >
                 {loading ? "Creating..." : "Signup"}
             </button>
+            </div>
 
+            <div className="py-3">
             <button
                 type="button"
                 onClick={() => setView("login")}
-                className="w-full mt-4 border py-3 rounded-lg"
+                className="text-sm flex gap-2 items-center cursor-pointer text-gray-400 hover:text-blue-900"
             >
-                Back To Login
+              <span><CgArrowLeft size={19} /></span>  Back To Login
             </button>
+
+            </div>
         </form>
     );
 }

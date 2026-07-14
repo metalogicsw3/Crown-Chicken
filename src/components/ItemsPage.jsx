@@ -61,10 +61,10 @@ const ItemsPage = () => {
 
     if (loading) {
         return (
-            <div className="min-h-100 flex items-center justify-center">
+            <div className="h-[90vh] flex items-center justify-center">
                 <div className="flex items-center gap-3 text-gray-600">
                     <Loader2 className="w-6 h-6 animate-spin" />
-                    <span className="text-lg">Loading our delicious menu...</span>
+                    <span className="text-2xl">Loading our delicious menu...</span>
                 </div>
             </div>
         );

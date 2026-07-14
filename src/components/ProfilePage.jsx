@@ -1,3 +1,4 @@
+// src/components/ProfilePage.jsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -5,11 +6,12 @@ import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { toast } from "react-hot-toast";
-import { IoMdPerson,IoIosMail } from "react-icons/io";
+import { IoMdPerson, IoIosMail } from "react-icons/io";
 import { FaKey } from "react-icons/fa";
 import { SiGooglemaps } from "react-icons/si";
 import { BsTelephoneFill } from "react-icons/bs";
 import { useRouter } from "next/navigation";
+import { CgArrowRight } from "react-icons/cg";
 
 const ProfilePage = () => {
   const [profile, setProfile] = useState({
@@ -17,9 +19,13 @@ const ProfilePage = () => {
     email: "",
   });
 
+  const [savedProfile, setSavedProfile] = useState({
+    name: "",
+    email: "",
+  });
 
   const [loading, setLoading] = useState(true);
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditingOpen, setIsEditingOpen] = useState(false);
 
   const router = useRouter();
 
@@ -27,8 +33,7 @@ const ProfilePage = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        router.push('/');
-        setLoading(false);
+        router.replace("/");
         return;
       }
 
@@ -36,7 +41,15 @@ const ProfilePage = () => {
         const snap = await getDoc(doc(db, "users", user.uid));
 
         if (snap.exists()) {
-          setProfile(snap.data());
+          const data = snap.data();
+          const fetched = {
+            name: data.name || " ",
+            email: data.email || " ",
+            address: data.address || " ",
+            phone: data.phone || " ",
+          };
+          setProfile((prev) => ({ ...prev, ...fetched }));
+          setSavedProfile((prev) => ({ ...prev, ...fetched }));
         }
       } catch (error) {
         console.error(error);
@@ -45,15 +58,12 @@ const ProfilePage = () => {
       }
     });
 
-    return () => unsubscribe();
-  }, []);
+    return unsubscribe;
+  }, [router]);
 
   // Handle Input Change
   const handleChange = (e) => {
-    setProfile((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
+    setProfile((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   // Update Profile
@@ -64,11 +74,13 @@ const ProfilePage = () => {
 
       await updateDoc(doc(db, "users", user.uid), {
         name: profile.name,
-        email: profile.email,
+        address: profile.address,
+        phone: profile.phone,
       });
 
+      setSavedProfile(profile);
       toast.success("Profile updated successfully!");
-      setIsEditing(false);
+      setIsEditingOpen(false);
     } catch (error) {
       console.error(error);
       toast.error("Something went wrong!");
@@ -78,121 +90,150 @@ const ProfilePage = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-[88vh]">
-        <p className="text-lg font-medium">Loading...</p>
+        <p className="text-2xl font-medium">Loading...</p>
       </div>
     );
   }
 
   return (
-    <div className="flex justify-center items-center bg-gray-100 p-5">
-      <div className="flex flex-col justify-center mx-auto gap-3 p-5 hover:shadow-xl max-w-xl h-[60vh] border border-gray-300 rounded-lg">
+    <div className="flex h-[90vh] justify-center items-center bg-gray-100 ">
+      <div className="flex flex-col justify-center mx-auto gap-3 p-5 hover:shadow-xl max-w-xl border border-gray-300 rounded-lg">
+        <div
+          onClick={() => {
+            router.replace("/");
+          }}
+          className="w-full flex justify-end py-2"
+        >
+          <button className="text-gray-400 transform duration-200 hover:scale-110">
+            <CgArrowRight className="" size={21} />
+          </button>
+        </div>
+
         {/*Info Section */}
-        <div className="flex gap-3 ">
+        <div className="flex gap-3 relative">
           <div className="border border-gray-400 rounded-full p-1 text-center">
-            <span className="text-gray-600"> image</span> 
+            <span className="text-gray-600"> image</span>
           </div>
           <div className="">
-            <h2 className="text-2xl font-semibold">{profile.name}</h2>
-            <p className="text-gray-500 text-sm">{profile.email}</p>
+            <h2 className="text-2xl font-semibold">{savedProfile.name}</h2>
+            <p className="text-gray-500 text-sm">{savedProfile.email}</p>
           </div>
         </div>
 
-      <hr className="text-gray-300" />
+        <hr className="text-gray-300" />
 
         {/*Edit  Section */}
-        <form onSubmit={ (e) => {
-          e.preventDefault();
-          handleUpdate()
-        }} className="py-2 grid gap-8 grid-cols-2">
-
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleUpdate();
+          }}
+          className="py-2 grid gap-8 grid-cols-2"
+        >
           <div className="space-y-1">
-            <label className="flex items-center gap-1">
-              <IoMdPerson size={18} className="text-blue-700" />
-              Name
-            </label>
+            <label className="flex items-center gap-1">Name</label>
             <div className="relative">
-              <IoMdPerson className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl" />
+              <IoMdPerson
+                size={18}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl"
+              />
               <input
                 type="text"
                 name="name"
                 value={profile.name}
-               onChange={handleChange}
-               onFocus={() => setIsEditing(true)}
-                readOnly={!isEditing}
-                className="w-full hover:bg-gray-200 border border-gray-400 rounded-lg py-2 pl-10 pr-3 focus:border-blue-500 focus:outline-none focus:ring-0"   />
+                onChange={handleChange}
+                onFocus={() => setIsEditingOpen(true)}
+                readOnly={!isEditingOpen}
+                className="w-full hover:bg-gray-200 border border-gray-400 rounded-lg py-2 pl-10 pr-3 focus:border-blue-500 focus:outline-none focus:ring-0"
+              />
             </div>
           </div>
 
           <div className="space-y-1">
-            <label className="flex items-center gap-1">
-              <IoIosMail size={18} className="text-blue-700" />
-              Email
-            </label>
+            <label className="flex items-center gap-1">Email</label>
             <div className="relative">
-              <IoIosMail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl" />
+              <IoIosMail
+                size={18}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl"
+              />
               <input
-               onChange={() => {}}
                 type="email"
-                value={profile.email}
-                disabled={!isEditing}
+                value={savedProfile.email}
+                disabled
                 className="w-full hover:bg-gray-200 border border-gray-400 rounded-lg py-2 pl-10 pr-3 focus:border-blue-500 focus:outline-none focus:ring-0"
               />
             </div>
           </div>
 
           <div className="space-y-1">
-            <label className="flex items-center gap-1">
-              <FaKey size={18} className="text-blue-700" />
-              Password
-            </label>
+            <label className="flex items-center gap-1">Password</label>
             <div className="relative">
-              <FaKey className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl" />
+              <FaKey
+                size={17}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl"
+              />
               <input
-               onChange={() => {}}
-                type="text"
-                value={""}
+                type="password"
+                value="••••••••"
+                disabled
                 className="w-full hover:bg-gray-200 border border-gray-400 rounded-lg py-2 pl-10 pr-3 focus:border-blue-500 focus:outline-none focus:ring-0"
               />
             </div>
           </div>
 
           <div className="space-y-1">
-            <label className="flex items-center gap-1">
-              <SiGooglemaps size={18} className="text-blue-700" />
-              Address
-            </label>
+            <label className="flex items-center gap-1">Address</label>
             <div className="relative">
-              <SiGooglemaps className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl" />
+              <SiGooglemaps
+                size={17}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl"
+              />
               <input
-               onChange={() => {}}
+                onChange={handleChange}
+                onFocus={() => setIsEditingOpen(true)}
+                readOnly={!isEditingOpen}
+                name="address"
                 type="text"
-                value={""}
+                value={profile.address}
                 className="w-full hover:bg-gray-200 border border-gray-400 rounded-lg py-2 pl-10 pr-3 focus:border-blue-500 focus:outline-none focus:ring-0"
               />
             </div>
           </div>
 
           <div className="space-y-1">
-            <label className="flex items-center gap-1">
-              <BsTelephoneFill size={18} className="text-blue-700" />
-              Contact Number 
-            </label>
+            <label className="flex items-center gap-1">Contact Number</label>
             <div className="relative">
-              <BsTelephoneFill className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl" />
+              <BsTelephoneFill
+                size={17}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl"
+              />
               <input
-               onChange={() => {}}
+                onChange={handleChange}
+                onFocus={() => setIsEditingOpen(true)}
+                readOnly={!isEditingOpen}
+                name="phone"
                 type="text"
-                value={""}
+                value={profile.phone}
                 className="w-full hover:bg-gray-200 border border-gray-400 rounded-lg py-2 pl-10 pr-3 focus:border-blue-500 focus:outline-none focus:ring-0"
               />
             </div>
             {/* Abu Bakar ki purzoor farmaish par add kia ha */}
             {/* <textarea name="information" className="text-xs border border-gray-400 mt-5 rounded-lg w-full h-40" placeholder="User GirlFriend Information" id=""></textarea> */}
           </div>
-          <button type="submit" className="w-full col-span-2 font-semibold bg-blue-900 text-white py-2 rounded-lg cursor-pointer hover:bg-blue-700">Update Profile</button>
+          <button
+            type="submit"
+            className="w-full col-span-2 font-semibold bg-blue-900 text-white py-2 rounded-lg cursor-pointer hover:bg-blue-700"
+          >
+            Update Profile
+          </button>
         </form>
       </div>
     </div>
   );
 };
 export default ProfilePage;
+
+
+
+
+
