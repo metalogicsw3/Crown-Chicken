@@ -1,17 +1,18 @@
 // src/components/TestingPage // This Page is just for testing perpose
 "use client";
-
+import { toast } from "react-hot-toast";
+import { changeEmail, changePassword, resetPassword } from "@/lib/auth";
 import { useEffect, useState } from "react";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { toast } from "react-hot-toast";
 import { IoMdPerson, IoIosMail } from "react-icons/io";
 import { FaKey } from "react-icons/fa";
 import { SiGooglemaps } from "react-icons/si";
 import { BsTelephoneFill } from "react-icons/bs";
 import { useRouter } from "next/navigation";
 import { CgArrowRight } from "react-icons/cg";
+import ProfilePopup from "./profilecomponents/ProfilePopup";
 
 const TestingPage = () => {
   const [profile, setProfile] = useState({
@@ -26,6 +27,7 @@ const TestingPage = () => {
 
   const [loading, setLoading] = useState(true);
   const [isEditingOpen, setIsEditingOpen] = useState(false);
+  const [popupType, setPopupType] = useState(null);
 
   const router = useRouter();
 
@@ -74,6 +76,7 @@ const TestingPage = () => {
 
       await updateDoc(doc(db, "users", user.uid), {
         name: profile.name,
+        email: profile.email,
         address: profile.address,
         phone: profile.phone,
       });
@@ -152,11 +155,8 @@ const TestingPage = () => {
           </div>
 
           <div className="space-y-1">
-            <label className="flex text-sm text-blue-800 font-semibold items-center justify-between gap-1">
+            <label className="flex text-sm text-blue-800 font-semibold ">
               Email
-              <button className="text-xs text-gray-400 hover:underline cursor-pointer">
-                change email
-              </button>
             </label>
             <div className="relative">
               <IoIosMail
@@ -164,20 +164,20 @@ const TestingPage = () => {
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl"
               />
               <input
+                onChange={handleChange}
+                onClick={() => setPopupType("email")}
+                readOnly
+                name="email"
                 type="email"
-                value={savedProfile.email}
-                disabled
+                value={profile.email}
                 className="w-full hover:bg-gray-200 border border-gray-400 rounded-lg py-2 pl-10 pr-3 focus:border-blue-500 focus:outline-none focus:ring-0"
               />
             </div>
           </div>
 
           <div className="space-y-1">
-            <label className="flex text-sm text-blue-800 font-semibold items-center justify-between gap-1">
+            <label className="flex text-sm text-blue-800 font-semibold">
               Password
-              <button className="text-xs text-gray-400 hover:underline cursor-pointer">
-                change password
-              </button>
             </label>
             <div className="relative">
               <FaKey
@@ -185,9 +185,13 @@ const TestingPage = () => {
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl"
               />
               <input
+                onChange={handleChange}
+                onClick={() => setPopupType("password")}
+                readOnly
                 type="password"
-                value="••••••••"
-                disabled
+                value=""
+                name="password"
+                placeholder="********"
                 className="w-full hover:bg-gray-200 border border-gray-400 rounded-lg py-2 pl-10 pr-3 focus:border-blue-500 focus:outline-none focus:ring-0"
               />
             </div>
@@ -243,6 +247,13 @@ const TestingPage = () => {
             Update Profile
           </button>
         </form>
+          {popupType && (
+            <ProfilePopup
+              type={popupType}
+              onClose={() => setPopupType(null)}
+              userEmail={savedProfile.email}
+            />
+          )}
       </div>
     </div>
   );

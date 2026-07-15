@@ -1,17 +1,19 @@
 // src/components/ProfilePage.jsx
 "use client";
-
+import { toast } from "react-hot-toast";
 import { useEffect, useState } from "react";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { toast } from "react-hot-toast";
 import { IoMdPerson, IoIosMail } from "react-icons/io";
 import { FaKey } from "react-icons/fa";
 import { SiGooglemaps } from "react-icons/si";
 import { BsTelephoneFill } from "react-icons/bs";
 import { useRouter } from "next/navigation";
 import { CgArrowRight } from "react-icons/cg";
+import ProfilePopup from "./ProfilePopup";
+import { RiVerifiedBadgeFill } from "react-icons/ri";
+import { sendVerificationEmail } from "@/lib/auth";
 
 const ProfilePage = () => {
   const [profile, setProfile] = useState({
@@ -26,6 +28,7 @@ const ProfilePage = () => {
 
   const [loading, setLoading] = useState(true);
   const [isEditingOpen, setIsEditingOpen] = useState(false);
+  const [popupType, setPopupType] = useState(null);
 
   const router = useRouter();
 
@@ -47,6 +50,7 @@ const ProfilePage = () => {
             email: data.email || " ",
             address: data.address || " ",
             phone: data.phone || " ",
+            emailVerified: data.emailVerified ?? false,
           };
           setProfile((prev) => ({ ...prev, ...fetched }));
           setSavedProfile((prev) => ({ ...prev, ...fetched }));
@@ -74,6 +78,7 @@ const ProfilePage = () => {
 
       await updateDoc(doc(db, "users", user.uid), {
         name: profile.name,
+        email: profile.email,
         address: profile.address,
         phone: profile.phone,
       });
@@ -87,6 +92,16 @@ const ProfilePage = () => {
     }
   };
 
+  // Send Verfication
+  const handleVerifyEmail = async () => {
+    try {
+      await sendVerificationEmail(auth.currentUser);
+      toast.success("Verification email sent.");
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-[88vh]">
@@ -96,7 +111,7 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="flex h-[90vh] justify-center items-center bg-gray-100 ">
+    <div className="flex h-[93vh] justify-center items-center bg-gray-100 ">
       <div className="flex flex-col justify-center mx-auto gap-3 p-5 hover:shadow-xl max-w-xl border border-gray-300 rounded-lg">
         <div
           onClick={() => {
@@ -110,13 +125,32 @@ const ProfilePage = () => {
         </div>
 
         {/*Info Section */}
-        <div className="flex gap-3 relative">
+        <div className="flex gap-5 relative">
           <div className="border border-gray-400 rounded-full p-1 text-center">
             <span className="text-gray-600"> image</span>
           </div>
-          <div className="">
+          <div>
             <h2 className="text-2xl font-semibold">{savedProfile.name}</h2>
-            <p className="text-gray-500 text-sm">{savedProfile.email}</p>
+
+            <div className="flex items-center gap-2">
+              <p className="text-gray-500 text-sm">{savedProfile.email}</p>
+
+              {profile.emailVerified ? (
+                <RiVerifiedBadgeFill
+                  className="text-blue-600"
+                  size={18}
+                  title="Verified Email"
+                />
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleVerifyEmail}
+                  className="text-xs text-red-600 font-medium cursor-pointer hover:underline"
+                >
+                  Verify Email
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -128,10 +162,12 @@ const ProfilePage = () => {
             e.preventDefault();
             handleUpdate();
           }}
-          className="py-2 grid gap-8 grid-cols-2"
+          className="py-2 grid gap-10 grid-cols-2"
         >
           <div className="space-y-1">
-            <label className="flex items-center gap-1">Name</label>
+            <label className="flex text-sm text-blue-800 font-semibold items-center gap-1">
+              Name
+            </label>
             <div className="relative">
               <IoMdPerson
                 size={18}
@@ -150,39 +186,52 @@ const ProfilePage = () => {
           </div>
 
           <div className="space-y-1">
-            <label className="flex items-center gap-1">Email</label>
+            <label className="flex text-sm text-blue-800 font-semibold ">
+              Email
+            </label>
             <div className="relative">
               <IoIosMail
                 size={18}
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl"
               />
               <input
+                onChange={handleChange}
+                onClick={() => setPopupType("email")}
+                readOnly
+                name="email"
                 type="email"
-                value={savedProfile.email}
-                disabled
+                value={profile.email}
                 className="w-full hover:bg-gray-200 border border-gray-400 rounded-lg py-2 pl-10 pr-3 focus:border-blue-500 focus:outline-none focus:ring-0"
               />
             </div>
           </div>
 
           <div className="space-y-1">
-            <label className="flex items-center gap-1">Password</label>
+            <label className="flex text-sm text-blue-800 font-semibold">
+              Password
+            </label>
             <div className="relative">
               <FaKey
                 size={17}
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl"
               />
               <input
+                onChange={handleChange}
+                onClick={() => setPopupType("password")}
+                readOnly
                 type="password"
-                value="••••••••"
-                disabled
+                value=""
+                name="password"
+                placeholder="********"
                 className="w-full hover:bg-gray-200 border border-gray-400 rounded-lg py-2 pl-10 pr-3 focus:border-blue-500 focus:outline-none focus:ring-0"
               />
             </div>
           </div>
 
           <div className="space-y-1">
-            <label className="flex items-center gap-1">Address</label>
+            <label className="flex text-sm text-blue-800 font-semibold items-center gap-1">
+              Address
+            </label>
             <div className="relative">
               <SiGooglemaps
                 size={17}
@@ -201,7 +250,9 @@ const ProfilePage = () => {
           </div>
 
           <div className="space-y-1">
-            <label className="flex items-center gap-1">Contact Number</label>
+            <label className="flex text-sm text-blue-800 font-semibold items-center gap-1">
+              Contact Number
+            </label>
             <div className="relative">
               <BsTelephoneFill
                 size={17}
@@ -227,13 +278,15 @@ const ProfilePage = () => {
             Update Profile
           </button>
         </form>
+        {popupType && (
+          <ProfilePopup
+            type={popupType}
+            onClose={() => setPopupType(null)}
+            userEmail={savedProfile.email}
+          />
+        )}
       </div>
     </div>
   );
 };
 export default ProfilePage;
-
-
-
-
-

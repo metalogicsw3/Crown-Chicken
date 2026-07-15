@@ -1,11 +1,10 @@
-// src/context/AuthContext.js 
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
 import {
   onAuthStateChanged,
   signOut,
 } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from "../lib/firebase";
 
 const AuthContext = createContext();
@@ -16,11 +15,35 @@ export function AuthProvider({ children }) {
   const [authLoading, setAuthLoading] = useState(true);
   const [adminLoading, setAdminLoading] = useState(true);
 
-  // Step 1: track auth state (real user OR anonymous guest)
+  //tracking auth state (real user OR anonymous guest)
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        setUser(firebaseUser);
+      
+        if (!firebaseUser.isAnonymous) {
+          try {
+            await firebaseUser.reload(); 
+            const freshUser = auth.currentUser;
+
+            const userRef = doc(db, "users", freshUser.uid);
+            const snap = await getDoc(userRef);
+
+            if (
+              snap.exists() &&
+              snap.data().emailVerified !== freshUser.emailVerified
+            ) {
+              await updateDoc(userRef, {
+                emailVerified: freshUser.emailVerified,
+              });
+            }
+            setUser(freshUser);
+          } catch (err) {
+            console.error("emailVerified sync failed:", err);
+            setUser(firebaseUser);
+          }
+        } else {
+          setUser(firebaseUser);
+        }
       } else {
         setUser(null);
       }
@@ -28,8 +51,8 @@ export function AuthProvider({ children }) {
     });
     return () => unsubscribe();
   }, []);
-
-  // Step 2: once we know who the user is, check admin role (only matters for real, non-anonymous users)
+  
+ // Check Admin or User
   useEffect(() => {
     const checkAdmin = async () => {
       if (!user || user.isAnonymous) {

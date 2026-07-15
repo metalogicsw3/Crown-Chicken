@@ -1,10 +1,13 @@
+// src/components/ForgotPassword 
 "use client";
-
 import { useState } from "react";
 import { resetPassword } from "@/lib/auth";
+
+
 export default function ForgotPassword({ setView }) {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+
   const handleReset = async (e) => {
     e.preventDefault();
     try {

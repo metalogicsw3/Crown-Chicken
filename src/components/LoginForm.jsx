@@ -26,13 +26,15 @@ export default function LoginForm({ setView, onClose }) {
       setLoading(true);
       toastId.current = showToast.loading("Logging in....");
       const user = await loginUser(email, password);
+
       setEmail("");
       setPassword("");
+
       const userRef = doc(db, "users", user.uid);
       const userSnap = await getDoc(userRef);
+
       if (userSnap.exists()) {
         const userData = userSnap.data();
-        toast.dismiss(toastId.current);
 
         if (userData.role === "admin") {
           showToast.success("Welcome Admin! 👋");
@@ -44,17 +46,15 @@ export default function LoginForm({ setView, onClose }) {
       }
       onClose();
     } catch (error) {
-      console.error(error);
-      toast.dismiss(toastId.current);
-
       if (error.code === "auth/invalid-credential") {
         showToast.error("Incorrect email or password.");
       } else if (error.code === "auth/too-many-requests") {
         showToast.error("Too many failed attempts. Try again later.");
       } else {
-        showToast.error(`Login failed: ${error.message || "Please try again"}`);
+        showToast.error("Something went wrong.");
       }
     } finally {
+      toast.dismiss(toastId.current); 
       setLoading(false);
     }
   };

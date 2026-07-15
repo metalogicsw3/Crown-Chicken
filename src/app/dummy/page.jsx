@@ -1,17 +1,16 @@
 // This page is only for testing
-'use client'
-import ProfilePage from "@/components/ProfilePage"
-import CheckOut2 from "@/components/TestingPage"
+"use client";
+import ProfilePage from "@/components/profilecomponents/ProfilePage";
+import CheckOut2 from "@/components/TestingPage";
 import { useRouter } from "next/navigation";
 
 const Dummy = () => {
-
   const router = useRouter();
 
   return (
     <div className="flex justify-center items-center h-[80vh]">
       Dummy Page
-    {/* <button 
+      {/* <button 
     onClick={() => {
       router.push('/profile')
     }}
@@ -19,10 +18,7 @@ const Dummy = () => {
       Click 
     </button> */}
     </div>
-  )
-}
+  );
+};
 
-export default Dummy
-
-
-
+export default Dummy;

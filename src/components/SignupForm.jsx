@@ -35,14 +35,14 @@ export default function SignupForm({ setView, onClose }) {
         try {
             setLoading(true);
             
-            // ✅ Show loading toast
+            //  Show loading toast
             toastId.current = showToast.loading("Creating your account...");
 
             await signupUser(name, email, password);
             
-            // ✅ Dismiss loading and show success
+            //  Dismiss loading and show success
             toast.dismiss(toastId.current);
-            showToast.success("Account created successfully! 🎉");
+            showToast.success("Account created! Verification email sent — please check your inbox.");
             
             // Reset form
             setName("");

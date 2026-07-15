@@ -1,9 +1,14 @@
 // src/lib/auth
 import {
-  signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  sendEmailVerification,
+  signInWithEmailAndPassword,
   signOut,
   sendPasswordResetEmail,
+  updatePassword,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
+  verifyBeforeUpdateEmail,
 } from "firebase/auth";
 
 import { doc, setDoc, getDoc } from "firebase/firestore";
@@ -24,8 +29,20 @@ export const signupUser = async (name, email, password) => {
     password,
   );
   const user = userCredential.user;
-  await setDoc(doc(db, "users", user.uid), { name, email, role: "user" });
+// Verfication add
+  await sendEmailVerification();
   return user;
+};
+
+// Send Verification
+export const sendVerificationEmail = async () => {
+  const user = auth.currentUser;
+
+  if (!user) {
+    throw new Error("No user found");
+  }
+
+  await sendEmailVerification(user);
 };
 
 // LOGIN
@@ -47,4 +64,35 @@ export const logoutUser = async () => {
 // RESET PASSWORD
 export const resetPassword = async (email) => {
   await sendPasswordResetEmail(auth, email);
+};
+
+// CHANGE EMAIL
+export const changeEmail = async (currentPassword, newEmail) => {
+  const user = auth.currentUser;
+  if (!user) throw new Error("User not logged in");
+
+  const credential = EmailAuthProvider.credential(user.email, currentPassword);
+
+  // Verify current password
+  await reauthenticateWithCredential(user, credential);
+
+  // Sends a verification link to the NEW email
+  await verifyBeforeUpdateEmail(user, newEmail);
+};
+
+//Change Password
+export const changePassword = async (currentPassword, newPassword) => {
+  const user = auth.currentUser;
+
+  if (!user) {
+    throw new Error("User not logged in");
+  }
+
+  const credential = EmailAuthProvider.credential(
+    user.email,
+    currentPassword
+  );
+
+  await reauthenticateWithCredential(user, credential);
+  await updatePassword(user, newPassword);
 };
