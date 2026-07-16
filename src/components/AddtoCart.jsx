@@ -36,13 +36,14 @@ const AddtoCart = () => {
     setDiscountCode,
     discountAmount,
     setDiscountAmount,
+    resetDiscount,
     deliveryFee,
     total,
   } = useCart();
 
   const toastId = useRef(null);
 
-  //  with toast
+  // Apply Discount with toast
  const handleApplyDiscount = () => {
     if (discountCode.trim().toUpperCase() === "SAVE10") {
         setDiscountAmount(cartTotal * 0.1);
@@ -76,6 +77,7 @@ const AddtoCart = () => {
                 // Show loading while clearing
                 toastId.current = showToast.loading("Clearing cart...");
                 clearCart();
+                resetDiscount();
                 toast.dismiss(toastId.current);
                 showToast.success("Cart cleared!");
               }}

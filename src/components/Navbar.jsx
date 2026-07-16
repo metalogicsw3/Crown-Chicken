@@ -16,7 +16,7 @@ import { IoPersonCircleSharp } from "react-icons/io5";
 import { useRouter } from "next/navigation";
 
 export default function Navbar() {
-  const { userOpen, setUserOpen, openPopup } = useCart();
+  const { userOpen, setUserOpen, openPopup,resetDiscount } = useCart();
 
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState(null);
@@ -63,6 +63,7 @@ export default function Navbar() {
 
       toast.dismiss(toastId);
       router.push("/");
+      resetDiscount();
       setUserOpen(!userOpen);
       showToast.success("Logged out successfully! 👋");
     } catch (err) {

@@ -20,7 +20,7 @@ const CheckOut = () => {
   });
   const [paymentMethod, setPaymentMethod] = useState("");
   const toastId = useRef(null);
-  const { uid, items, loading, clearCart, cartTotal, total, closePopup } =
+  const { uid, items, loading, clearCart, cartTotal, total, closePopup, resetDiscount } =
     useCart();
 
   const saveData = async (e) => {
@@ -68,6 +68,7 @@ const CheckOut = () => {
 
       // router.push("/"); <== For Page Routing
       clearCart();
+      resetDiscount();
       closePopup();
     } catch (error) {
       console.error(error);

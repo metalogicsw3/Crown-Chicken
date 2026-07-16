@@ -48,11 +48,17 @@ export function CartProvider({ children }) {
   const [popupOpen, setPopupOpen] = useState(false);
   const [popupContent, setPopupContent] = useState("");
 
+  const resetDiscount = () => {
+    setDiscountCode('');
+    setDiscountAmount(0);
+  }
+
   // Track auth state
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (user) => {
       setUid(user ? user.uid : null);
     });
+
     return () => unsub();
   }, []);
 
@@ -228,7 +234,7 @@ export function CartProvider({ children }) {
 
         discountAmount,
         setDiscountAmount,
-
+        resetDiscount,
         deliveryFee,
         total,
 
