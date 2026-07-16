@@ -8,7 +8,7 @@ import { addDoc, collection } from "firebase/firestore";
 import { toast } from "react-hot-toast";
 import { showToast } from "@/lib/toast";
 import { useRef } from "react";
-import { Timestamp } from "firebase/firestore";
+import { serverTimestamp  } from "firebase/firestore";
 
 const CheckOut = () => {
   // const router = useRouter();
@@ -71,7 +71,7 @@ const CheckOut = () => {
         items: orderItems,
         subtotal: cartTotal,
         total: total,
-        createAt: new Date(),
+        createdAt: serverTimestamp(),
       });
       toast.dismiss(toastId.current);
       showToast.success("Your order has been placed successfully! 🎉");
