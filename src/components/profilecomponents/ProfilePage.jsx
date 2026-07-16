@@ -119,8 +119,8 @@ const ProfilePage = () => {
           }}
           className="w-full flex justify-end py-2"
         >
-          <button className="text-gray-400 transform duration-200 hover:scale-110">
-            <CgArrowRight className="" size={21} />
+          <button className="text-gray-400 flex gap-1 items-center  transform duration-200 hover:scale-110">
+            <span>Back to Order Page</span><CgArrowRight className="" size={21} />
           </button>
         </div>
 
@@ -132,13 +132,13 @@ const ProfilePage = () => {
           <div>
             <h2 className="text-2xl font-semibold">{savedProfile.name}</h2>
 
-            <div className="flex items-center gap-2">
-              <p className="text-gray-500 text-sm">{savedProfile.email}</p>
+            <div className="flex items-center text-sm gap-1">
+              <p className="text-gray-500 ">{savedProfile.email}</p>
 
               {profile.emailVerified ? (
                 <RiVerifiedBadgeFill
                   className="text-blue-600"
-                  size={18}
+                  size={16}
                   title="Verified Email"
                 />
               ) : (
@@ -268,8 +268,6 @@ const ProfilePage = () => {
                 className="w-full hover:bg-gray-200 border border-gray-400 rounded-lg py-2 pl-10 pr-3 focus:border-blue-500 focus:outline-none focus:ring-0"
               />
             </div>
-            {/* Abu Bakar ki purzoor farmaish par add kia ha */}
-            {/* <textarea name="information" className="text-xs border border-gray-400 mt-5 rounded-lg w-full h-40" placeholder="User GirlFriend Information" id=""></textarea> */}
           </div>
           <button
             type="submit"

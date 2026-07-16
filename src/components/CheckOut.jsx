@@ -8,20 +8,31 @@ import { addDoc, collection } from "firebase/firestore";
 import { toast } from "react-hot-toast";
 import { showToast } from "@/lib/toast";
 import { useRef } from "react";
+import { Timestamp } from "firebase/firestore";
 
 const CheckOut = () => {
   // const router = useRouter();
+  const { deliveryMethod } = useCart();
 
   const [userData, setUserData] = useState({
     name: "",
-    postcode: "",
     emailadd: "",
+    address: "",
+    postcode: "",
     phonnum: "",
   });
   const [paymentMethod, setPaymentMethod] = useState("");
   const toastId = useRef(null);
-  const { uid, items, loading, clearCart, cartTotal, total, closePopup, resetDiscount } =
-    useCart();
+  const {
+    uid,
+    items,
+    loading,
+    clearCart,
+    cartTotal,
+    total,
+    closePopup,
+    resetDiscount,
+  } = useCart();
 
   const saveData = async (e) => {
     e.preventDefault();
@@ -49,29 +60,26 @@ const CheckOut = () => {
 
       await addDoc(collection(db, "orders"), {
         name: userData.name,
-        postcode: userData.postcode,
         emailadd: userData.emailadd,
+        address: userData.address,
+        postcode: userData.postcode,
         phonnum: userData.phonnum,
 
         userType: userType,
         userId: uid || null,
-        paymentMethod: paymentMethod,
+        paymentMethod: deliveryMethod,
         items: orderItems,
-
         subtotal: cartTotal,
         total: total,
-
         createAt: new Date(),
       });
       toast.dismiss(toastId.current);
       showToast.success("Your order has been placed successfully! 🎉");
 
-      // router.push("/"); <== For Page Routing
       clearCart();
       resetDiscount();
       closePopup();
     } catch (error) {
-      console.error(error);
       toast.dismiss(toastId.current);
       showToast.error("Failed to place order. Please try again.");
     }
@@ -124,9 +132,9 @@ const CheckOut = () => {
               required={true}
               value={userData.address}
               onChange={(e) =>
-                setUserData({ ...userData, emailadd: e.target.value })
+                setUserData({ ...userData, address: e.target.value })
               }
-              placeholder="testing@gmail.com"
+              placeholder="Enter your address...."
               className="hover:bg-gray-200 border border-gray-400 focus:border-blue-500 focus:outline-none focus:ring-0 rounded-md py-1 px-2 placeholder:text-gray-400"
             />
           </div>

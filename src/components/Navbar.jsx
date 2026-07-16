@@ -77,8 +77,8 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="bg-blue-900 text-white shadow-md sticky top-0 z-50">
-        <div className="min-w-auto w-auto mx-auto px-2 py-3 flex items-center justify-between">
+      <nav className="bg-blue-900 text-white shadow-md  sticky top-0 z-50">
+        <div className="min-w-auto w-auto mx-auto px-5 py-3 flex items-center justify-between">
           {/* Logo */}
           <Link
             href="/"
