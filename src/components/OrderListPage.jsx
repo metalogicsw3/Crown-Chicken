@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs,getDocsFromServer ,orderBy } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { db, auth } from "@/lib/firebase";
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
@@ -30,12 +30,14 @@ export default function OrderListPage() {
       const q = query(
         collection(db, "orders"),
         where("userId", "==", user.uid),
+        orderBy("createdAt", "desc")
       );
-      const snapshot = await getDocs(q);
+      const snapshot = await getDocsFromServer(q);
       const data = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
+      console.log(data);
       setOrders(data);
     });
     return () => unsubscribe();
@@ -67,7 +69,7 @@ export default function OrderListPage() {
                 <div>
                   <p className="font-medium text-gray-800">{order.name}</p>
                   <p className="text-xs text-gray-500">
-                    {formatDate(order.createAt)}
+                    {formatDate(order.createdAt)}
                   </p>
                 </div>
                 <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-lg whitespace-nowrap">

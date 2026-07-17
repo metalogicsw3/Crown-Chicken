@@ -11,8 +11,8 @@ const DynamicPage = () => {
 
   const popupComponents = {
     CheckOut: <CheckOut />,
-    // orderList: <OrderListPage />,
-    orderList: <TestingPage />,
+    orderList: <OrderListPage />,
+    // orderList: <TestingPage />,
 
   };
 

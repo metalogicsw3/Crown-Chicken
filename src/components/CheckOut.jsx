@@ -8,7 +8,7 @@ import { addDoc, collection } from "firebase/firestore";
 import { toast } from "react-hot-toast";
 import { showToast } from "@/lib/toast";
 import { useRef } from "react";
-import { serverTimestamp  } from "firebase/firestore";
+import { serverTimestamp } from "firebase/firestore";
 
 const CheckOut = () => {
   // const router = useRouter();
@@ -32,6 +32,8 @@ const CheckOut = () => {
     total,
     closePopup,
     resetDiscount,
+    selectedTime,
+    selectedDate,
   } = useCart();
 
   const saveData = async (e) => {
@@ -68,6 +70,10 @@ const CheckOut = () => {
         userType: userType,
         userId: uid || null,
         paymentMethod: deliveryMethod,
+        orderType: deliveryMethod,
+        time: deliveryMethod === "delivery" ? selectedTime : selectedTime,
+        date: deliveryMethod === "pickup" ? selectedDate : null,
+        status: false,
         items: orderItems,
         subtotal: cartTotal,
         total: total,

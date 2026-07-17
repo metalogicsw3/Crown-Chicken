@@ -47,11 +47,55 @@ export function CartProvider({ children }) {
   const [userOpen, setUserOpen] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
   const [popupContent, setPopupContent] = useState("");
+  const [timeDropdownOpen, setTimeDropdownOpen] = useState(false);
+  const [selectedTime, setSelectedTime] = useState("");
+  const [dateDropdownOpen, setDateDropdownOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState("");
+
+  const timeSlots = [
+    "11:00 AM - 11:20 AM",
+    "11:20 AM - 11:40 AM",
+    "11:40 AM - 12:00 PM",
+    "12:00 PM - 12:20 PM",
+    "12:20 PM - 12:40 PM",
+    "12:40 PM - 01:00 PM",
+    "01:00 PM - 01:20 PM",
+    "01:20 PM - 01:40 PM",
+    "01:40 PM - 02:00 PM",
+    "02:00 PM - 02:20 PM",
+  ];
+
+  const getWeekendDates = () => {
+    const today = new Date();
+    const result = [];
+
+    const temp = new Date(today);
+
+    while (result.length < 3) {
+      const day = temp.getDay(); // 0=Sun, 5=Fri, 6=Sat
+
+      if (day === 5 || day === 6 || day === 0) {
+        result.push(
+          temp.toLocaleDateString("en-GB", {
+            weekday: "short",
+            day: "2-digit",
+            month: "short",
+          }),
+        );
+      }
+
+      temp.setDate(temp.getDate() + 1);
+    }
+
+    return result;
+  };
+
+  const dateSlots = getWeekendDates();
 
   const resetDiscount = () => {
-    setDiscountCode('');
+    setDiscountCode("");
     setDiscountAmount(0);
-  }
+  };
 
   // Track auth state
   useEffect(() => {
@@ -240,6 +284,18 @@ export function CartProvider({ children }) {
 
         userOpen,
         setUserOpen,
+
+        timeDropdownOpen,
+        setTimeDropdownOpen,
+        selectedTime,
+        setSelectedTime,
+        timeSlots,
+
+        dateDropdownOpen,
+        setDateDropdownOpen,
+        selectedDate,
+        setSelectedDate,
+        dateSlots,
       }}
     >
       {children}

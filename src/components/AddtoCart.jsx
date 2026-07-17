@@ -1,10 +1,8 @@
 // src/components/AddtoCart.jsx 
-
-'use client';
-import { useState, useRef } from "react";
+"use client";
+import { useState, useRef, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
 import {
-  MdChevronRight,
   MdDeliveryDining,
   MdStorefront,
   MdRemove,
@@ -15,11 +13,13 @@ import {
   MdCalendarToday,
   MdDiscount,
 } from "react-icons/md";
-import { toast } from 'react-hot-toast';
+import { toast } from "react-hot-toast";
 import { showToast } from "@/lib/toast";
+import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
+import TimeSlot from "./TimeSlot";
+import DateSlot from "./DateSlot";
 
 const AddtoCart = () => {
-
   const {
     items,
     loading,
@@ -39,21 +39,53 @@ const AddtoCart = () => {
     resetDiscount,
     deliveryFee,
     total,
+
+    timeDropdownOpen,
+    setTimeDropdownOpen,
+    selectedTime,
+    dateDropdownOpen,
+    setDateDropdownOpen,
+    selectedDate,
   } = useCart();
 
   const toastId = useRef(null);
+  const timeRef = useRef(null);
+  const dateRef = useRef(null);
+
+  const handleCheckOut = () => {
+    // Delivery
+    if (deliveryMethod === "delivery") {
+      if (!selectedTime) {
+        toast.error("Please select a delivery time.");
+        return;
+      }
+    }
+    // Pickup
+    if (deliveryMethod === "pickup") {
+      if (!selectedDate) {
+        toast.error("Please select a pickup date.");
+        return;
+      }
+
+      if (!selectedTime) {
+        toast.error("Please select a pickup time.");
+        return;
+      }
+    }
+    openPopup("CheckOut");
+  };
 
   // Apply Discount with toast
- const handleApplyDiscount = () => {
+  const handleApplyDiscount = () => {
     if (discountCode.trim().toUpperCase() === "SAVE10") {
-        setDiscountAmount(cartTotal * 0.1);
-        showToast.success("Discount applied! 🎉");
-        setDiscountCode('')
+      setDiscountAmount(cartTotal * 0.1);
+      showToast.success("Discount applied! 🎉");
+      setDiscountCode("");
     } else {
-        setDiscountAmount(0);
-        showToast.error("Invalid discount code.");
+      setDiscountAmount(0);
+      showToast.error("Invalid discount code.");
     }
-};
+  };
 
   // clear cart with toast
   const handleClearCart = () => {
@@ -63,7 +95,9 @@ const AddtoCart = () => {
     const confirmId = toast.custom(
       (t) => (
         <div className="bg-white p-4 rounded-lg shadow-xl max-w-sm border border-gray-200">
-          <p className="text-gray-800 font-medium mb-3">Clear all items from cart?</p>
+          <p className="text-gray-800 font-medium mb-3">
+            Clear all items from cart?
+          </p>
           <div className="flex gap-2 justify-end">
             <button
               onClick={() => toast.dismiss(t.id)}
@@ -88,7 +122,7 @@ const AddtoCart = () => {
           </div>
         </div>
       ),
-      { duration: Infinity }
+      { duration: Infinity },
     );
   };
 
@@ -109,10 +143,26 @@ const AddtoCart = () => {
     removeFromCart(foodId);
   };
 
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      // Time dropdown
+      if (timeRef.current && !timeRef.current.contains(e.target)) {
+        setTimeDropdownOpen(false);
+      }
+      // Date dropdown
+      if (dateRef.current && !dateRef.current.contains(e.target)) {
+        setDateDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <div className="w-full h-full py-2 ">
-      <div className="w-full h-[88vh] overflow-y-auto max-w-md max-h-screen flex flex-col rounded-lg bg-white shadow-md border border-gray-300 ">
-
+      <div className="w-full h-[88vh] overflow-visible max-w-md max-h-screen flex flex-col rounded-lg bg-white shadow-md border border-gray-300 ">
         {/* Header */}
         <div className="p-2 border-b border-gray-200 shrink-0 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
@@ -139,10 +189,11 @@ const AddtoCart = () => {
           <div className="flex gap-2">
             <button
               onClick={() => setDeliveryMethod("delivery")}
-              className={`flex-1 px-4 py-2 rounded-lg flex items-center justify-center gap-2 text-sm ${deliveryMethod === "delivery"
-                ? "bg-black text-white"
-                : "bg-gray-50 text-gray-600 border border-gray-200"
-                }`}
+              className={`flex-1 px-4 py-2 rounded-lg flex items-center justify-center gap-2 text-sm ${
+                deliveryMethod === "delivery"
+                  ? "bg-black text-white"
+                  : "bg-gray-50 text-gray-600 border border-gray-200"
+              }`}
             >
               <MdDeliveryDining className="text-lg" />
               <div className="text-left">
@@ -151,10 +202,11 @@ const AddtoCart = () => {
             </button>
             <button
               onClick={() => setDeliveryMethod("pickup")}
-              className={`flex-1 px-4 py-2 rounded-lg flex items-center justify-center gap-2 text-sm ${deliveryMethod === "pickup"
-                ? "bg-black text-white"
-                : "bg-gray-50 text-gray-600 border border-gray-200"
-                }`}
+              className={`flex-1 px-4 py-2 rounded-lg flex items-center justify-center gap-2 text-sm ${
+                deliveryMethod === "pickup"
+                  ? "bg-black text-white"
+                  : "bg-gray-50 text-gray-600 border border-gray-200"
+              }`}
             >
               <MdStorefront className="text-lg" />
               <div className="text-left">
@@ -164,18 +216,59 @@ const AddtoCart = () => {
           </div>
 
           {/* Time Slot */}
-          <div className="flex items-center justify-between mt-3 bg-gray-50 px-3 py-2 rounded-lg border border-gray-200">
-            <div className="flex items-center gap-3 text-gray-600 flex-wrap">
-              <div className="flex items-center gap-1">
+          <div className="w-full mt-3 grid grid-cols-2 gap-2">
+            {/* Date Button */}
+            <div
+              ref={dateRef}
+              className={`relative ${deliveryMethod === "delivery" ? "hidden" : ""}`}
+            >
+              <button
+                onClick={() => setDateDropdownOpen(!dateDropdownOpen)}
+                className="w-full flex items-center justify-center gap-2 border border-gray-400 rounded-lg px-2 py-1"
+              >
                 <MdCalendarToday className="text-gray-500 text-sm" />
-                <span className="text-xs font-medium">Today</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <MdAccessTime className="text-gray-500 text-sm" />
-                <span className="text-xs font-medium">11:00 – 11:30</span>
-              </div>
+
+                <span className="text-xs text-gray-500 font-medium">
+                  {selectedDate || `${deliveryMethod} Date`}
+                </span>
+
+                <MdKeyboardArrowDown
+                  className={`text-gray-400 text-xl transition-transform duration-300 ${
+                    dateDropdownOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+
+              <DateSlot />
             </div>
-            <MdChevronRight className="text-gray-400 text-xl shrink-0" />
+
+            {/* Time Button */}
+            <div
+              ref={timeRef}
+              className={`relative ${
+                deliveryMethod === "delivery" ? "col-span-2" : "col-span-1"
+              }`}
+            >
+              <button
+                onClick={() => setTimeDropdownOpen(!timeDropdownOpen)}
+                className="w-full flex items-center justify-center gap-2 border border-gray-400 rounded-lg px-2 py-1"
+              >
+                <MdAccessTime className="text-gray-500 text-sm" />
+
+                <span className="text-xs text-gray-500 font-medium">
+                  {selectedTime || `${deliveryMethod} Time`}
+                </span>
+
+                <MdKeyboardArrowDown
+                  className={`text-gray-400 text-xl transition-transform duration-300 ${
+                    timeDropdownOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+
+              {/* Dropdown */}
+              <TimeSlot />
+            </div>
           </div>
         </div>
 
@@ -193,12 +286,17 @@ const AddtoCart = () => {
                 </div>
               </div>
               <p className="text-gray-500 text-sm">Your cart is empty</p>
-              <p className="text-gray-400 text-xs mt-1">Add items from our menu!</p>
+              <p className="text-gray-400 text-xs mt-1">
+                Add items from our menu!
+              </p>
             </div>
           ) : (
             <div className="space-y-3">
               {items.map((item) => (
-                <div key={item.foodId} className="flex items-center gap-3 py-1.5 px-3 bg-gray-50 rounded-lg">
+                <div
+                  key={item.foodId}
+                  className="flex items-center gap-3 py-1.5 px-3 bg-gray-50 rounded-lg"
+                >
                   {/* Thumbnail */}
                   {item.imageUrl && (
                     <img
@@ -210,7 +308,9 @@ const AddtoCart = () => {
 
                   {/* Info */}
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-medium text-gray-800 text-sm truncate">{item.name}</h4>
+                    <h4 className="font-medium text-gray-800 text-sm truncate">
+                      {item.name}
+                    </h4>
                     <p className="text-gray-600 font-medium text-xs">
                       £{item.price.toFixed(2)}
                     </p>
@@ -219,7 +319,9 @@ const AddtoCart = () => {
                   {/* Quantity Controls */}
                   <div className="flex items-center gap-1 bg-white rounded-lg border border-gray-200 px-1 py-0.5 shrink-0">
                     <button
-                      onClick={() => handleUpdateQty(item.foodId, item.qty - 1, item.name)}
+                      onClick={() =>
+                        handleUpdateQty(item.foodId, item.qty - 1, item.name)
+                      }
                       className="p-1 text-gray-600 hover:text-red-500 transition"
                       aria-label="Decrease quantity"
                     >
@@ -229,7 +331,9 @@ const AddtoCart = () => {
                       {item.qty}
                     </span>
                     <button
-                      onClick={() => handleUpdateQty(item.foodId, item.qty + 1, item.name)}
+                      onClick={() =>
+                        handleUpdateQty(item.foodId, item.qty + 1, item.name)
+                      }
                       className="p-1 text-gray-600 hover:text-green-600 transition"
                       aria-label="Increase quantity"
                     >
@@ -298,10 +402,10 @@ const AddtoCart = () => {
                   <span>Delivery Fee</span>
                   <span>£{deliveryFee.toFixed(2)}</span>
                 </div>
-                {discountAmount  > 0 && (
+                {discountAmount > 0 && (
                   <div className="flex justify-between text-green-600">
                     <span>Discount</span>
-                    <span>-£{discountAmount .toFixed(2)}</span>
+                    <span>-£{discountAmount.toFixed(2)}</span>
                   </div>
                 )}
                 <div className="border-y border-gray-200 py-1">
@@ -312,8 +416,9 @@ const AddtoCart = () => {
                 </div>
                 <div className="flex items-center justify-center py-1">
                   <button
-                    onClick={() => { openPopup("CheckOut") }}
-                    className="px-8 py-2 bg-black text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition">
+                    onClick={handleCheckOut}
+                    className="px-8 py-2 bg-black text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition"
+                  >
                     Proceed to Check
                   </button>
                 </div>
@@ -321,7 +426,6 @@ const AddtoCart = () => {
             </>
           )}
         </div>
-
       </div>
     </div>
   );
