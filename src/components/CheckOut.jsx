@@ -9,20 +9,11 @@ import { toast } from "react-hot-toast";
 import { showToast } from "@/lib/toast";
 import { useRef } from "react";
 import { serverTimestamp } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
+import { useEffect } from "react";
+import { MdDeliveryDining } from "react-icons/md";
 
 const CheckOut = () => {
-  // const router = useRouter();
-  const { deliveryMethod } = useCart();
-
-  const [userData, setUserData] = useState({
-    name: "",
-    emailadd: "",
-    address: "",
-    postcode: "",
-    phonnum: "",
-  });
-  const [paymentMethod, setPaymentMethod] = useState("");
-  const toastId = useRef(null);
   const {
     uid,
     items,
@@ -34,10 +25,81 @@ const CheckOut = () => {
     resetDiscount,
     selectedTime,
     selectedDate,
+    deliveryMethod,
   } = useCart();
+
+  const [userData, setUserData] = useState({
+    name: "",
+    emailadd: "",
+    address: "",
+    postcode: "",
+    phonnum: "",
+  });
+
+  const [deliveryUnavailable, setDeliveryUnavailable] = useState(false);
+
+  //Fetch Data
+  useEffect(() => {
+    const getUserProfile = async () => {
+      if (!uid) return;
+
+      try {
+        const docSnap = await getDoc(doc(db, "users", uid));
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+
+          setUserData({
+            name: data.name || "",
+            emailadd: data.email || "",
+            address: data.address || "",
+            postcode: data.postcode || "",
+            phonnum: data.phone || "",
+          });
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    getUserProfile();
+  }, [uid]);
+
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const toastId = useRef(null);
 
   const saveData = async (e) => {
     e.preventDefault();
+
+    //Postcode Validation
+    const allowedPostcodes = [
+      "GU14",
+      "GU15",
+      "GU16",
+      "GU17",
+      "GU18",
+      "GU19",
+      "GU47",
+    ];
+    const postcode = userData.postcode.trim().toUpperCase();
+
+    const isValidPostcode = allowedPostcodes.some((code) =>
+      postcode.startsWith(code),
+    );
+
+    if (!isValidPostcode) {
+      setDeliveryUnavailable(true);
+      showToast.error("Sorry, delivery is not available in your area.");
+      return;
+    }
+
+    // Phone Number Validation
+    const ukPhoneRegex = /^07\d{9}$/;
+
+    if (!ukPhoneRegex.test(userData.phonnum)) {
+      showToast.error("Enter a valid UK mobile number");
+      return;
+    }
 
     if (paymentMethod === "") {
       showToast.error("Please select Payment method");
@@ -71,8 +133,8 @@ const CheckOut = () => {
         userId: uid || null,
         paymentMethod: deliveryMethod,
         orderType: deliveryMethod,
-        time: deliveryMethod === "delivery" ? selectedTime : selectedTime,
-        date: deliveryMethod === "pickup" ? selectedDate : null,
+        time: deliveryMethod === "Delivery" ? selectedTime : selectedTime,
+        date: deliveryMethod === "Pickup" ? selectedDate : null,
         status: false,
         items: orderItems,
         subtotal: cartTotal,
@@ -117,13 +179,9 @@ const CheckOut = () => {
           <div className="flex flex-col gap-1">
             <label className="text-red-500 ">Email address *</label>
             <input
-              required={true}
               type="email"
               value={userData.emailadd}
-              onChange={(e) =>
-                setUserData({ ...userData, emailadd: e.target.value })
-              }
-              placeholder="testing@gmail.com"
+              readOnly
               className="hover:bg-gray-200 border border-gray-400 focus:border-blue-500 focus:outline-none focus:ring-0 rounded-md py-1 px-2 placeholder:text-gray-400"
             />
           </div>
@@ -169,12 +227,14 @@ const CheckOut = () => {
             </label>
             <input
               required={true}
-              type="number"
+              type="tel"
+              maxLength={11}
+              pattern="^07\d{9}$"
+              placeholder="07400123456"
               value={userData.phonnum}
               onChange={(e) =>
                 setUserData({ ...userData, phonnum: e.target.value })
               }
-              placeholder="+442007700900123"
               className="hover:bg-gray-200 border border-gray-400 focus:border-blue-500 focus:outline-none focus:ring-0 rounded-md py-1 px-2 placeholder:text-gray-400"
             />
           </div>
@@ -221,6 +281,17 @@ const CheckOut = () => {
                     </span>
                   </div>
                   <hr className="text-gray-300 rounded-lg" />
+                  {deliveryUnavailable && (
+                    <div className="mt-5 rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700">
+                      <span className="flex items-center gap-2">
+                      <MdDeliveryDining className="" size={20}/> We only deliver on the following postcodes:
+                      </span>
+                      <br />
+                      <span className="font-semibold">
+                        GU14, GU15, GU16, GU17, GU18, GU19, GU47
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             )}

@@ -54,21 +54,21 @@ const AddtoCart = () => {
 
   const handleCheckOut = () => {
     // Delivery
-    if (deliveryMethod === "delivery") {
+    if (deliveryMethod === "Delivery") {
       if (!selectedTime) {
         toast.error("Please select a delivery time.");
         return;
       }
     }
     // Pickup
-    if (deliveryMethod === "pickup") {
+    if (deliveryMethod === "Pickup") {
       if (!selectedDate) {
-        toast.error("Please select a pickup date.");
+        toast.error("Please select a Pickup date.");
         return;
       }
 
       if (!selectedTime) {
-        toast.error("Please select a pickup time.");
+        toast.error("Please select a Pickup time.");
         return;
       }
     }
@@ -188,9 +188,9 @@ const AddtoCart = () => {
         <div className="p-4 border-b border-gray-200 shrink-0">
           <div className="flex gap-2">
             <button
-              onClick={() => setDeliveryMethod("delivery")}
+              onClick={() => setDeliveryMethod("Delivery")}
               className={`flex-1 px-4 py-2 rounded-lg flex items-center justify-center gap-2 text-sm ${
-                deliveryMethod === "delivery"
+                deliveryMethod === "Delivery"
                   ? "bg-black text-white"
                   : "bg-gray-50 text-gray-600 border border-gray-200"
               }`}
@@ -201,9 +201,9 @@ const AddtoCart = () => {
               </div>
             </button>
             <button
-              onClick={() => setDeliveryMethod("pickup")}
+              onClick={() => setDeliveryMethod("Pickup")}
               className={`flex-1 px-4 py-2 rounded-lg flex items-center justify-center gap-2 text-sm ${
-                deliveryMethod === "pickup"
+                deliveryMethod === "Pickup"
                   ? "bg-black text-white"
                   : "bg-gray-50 text-gray-600 border border-gray-200"
               }`}
@@ -220,7 +220,7 @@ const AddtoCart = () => {
             {/* Date Button */}
             <div
               ref={dateRef}
-              className={`relative ${deliveryMethod === "delivery" ? "hidden" : ""}`}
+              className={`relative ${deliveryMethod === "Delivery" ? "hidden" : ""}`}
             >
               <button
                 onClick={() => setDateDropdownOpen(!dateDropdownOpen)}
@@ -246,7 +246,7 @@ const AddtoCart = () => {
             <div
               ref={timeRef}
               className={`relative ${
-                deliveryMethod === "delivery" ? "col-span-2" : "col-span-1"
+                deliveryMethod === "Delivery" ? "col-span-2" : "col-span-1"
               }`}
             >
               <button

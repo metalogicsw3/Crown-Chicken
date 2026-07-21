@@ -1,9 +1,18 @@
 "use client";
 import { useEffect, useState } from "react";
-import { collection, query, where, getDocs,getDocsFromServer ,orderBy } from "firebase/firestore";
+import { MdOutlineDone } from "react-icons/md";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  getDocsFromServer,
+  orderBy,
+} from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { db, auth } from "@/lib/firebase";
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
+import { useCart } from "@/context/CartContext";
 
 export default function OrderListPage() {
   const [orders, setOrders] = useState([]);
@@ -30,7 +39,7 @@ export default function OrderListPage() {
       const q = query(
         collection(db, "orders"),
         where("userId", "==", user.uid),
-        orderBy("createdAt", "desc")
+        orderBy("createdAt", "desc"),
       );
       const snapshot = await getDocsFromServer(q);
       const data = snapshot.docs.map((doc) => ({
@@ -74,6 +83,25 @@ export default function OrderListPage() {
                 </div>
                 <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-lg whitespace-nowrap">
                   {order.paymentMethod}
+                </span>
+                <div>
+                  <p className="font-medium text-green-700">Selected Time</p>
+                  <p className="text-xs text-gray-500">{order.time}</p>
+                </div>
+                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-md whitespace-nowrap">
+                  {order.status === false ? (
+                    "Pending..."
+                  ) : order.paymentMethod === "Delivery" ? (
+                    <span className="flex items-center gap-1">
+                      Delivered <MdOutlineDone className="text-green-500" />
+                    </span>
+                  ) : order.paymentMethod === "Pickup" ? (
+                    <span className="flex items-center gap-1">
+                      Collected <MdOutlineDone className="text-green-500" />
+                    </span>
+                  ) : (
+                    ""
+                  )}
                 </span>
 
                 {openOrder === order.id ? (

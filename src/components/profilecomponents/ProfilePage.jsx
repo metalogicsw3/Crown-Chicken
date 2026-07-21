@@ -76,6 +76,13 @@ const ProfilePage = () => {
       const user = auth.currentUser;
       if (!user) return;
 
+      const ukPhoneRegex = /^07\d{9}$/;
+
+      if (!ukPhoneRegex.test(profile.phone)) {
+        toast.error("Enter a valid UK mobile number (e.g. 07400123456)");
+        return;
+      }
+
       await updateDoc(doc(db, "users", user.uid), {
         name: profile.name,
         email: profile.email,
@@ -120,7 +127,8 @@ const ProfilePage = () => {
           className="w-full flex justify-end py-2"
         >
           <button className="text-gray-400 flex gap-1 items-center  transform duration-200 hover:scale-110">
-            <span>Back to Order Page</span><CgArrowRight className="" size={21} />
+            <span>Back to Order Page</span>
+            <CgArrowRight className="" size={21} />
           </button>
         </div>
 
@@ -263,8 +271,11 @@ const ProfilePage = () => {
                 onFocus={() => setIsEditingOpen(true)}
                 readOnly={!isEditingOpen}
                 name="phone"
-                type="text"
+                type="tel"
                 value={profile.phone}
+                maxLength={11}
+                pattern="^07\d{9}$"
+                placeholder="07400123456"
                 className="w-full hover:bg-gray-200 border border-gray-400 rounded-lg py-2 pl-10 pr-3 focus:border-blue-500 focus:outline-none focus:ring-0"
               />
             </div>

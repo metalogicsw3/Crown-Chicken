@@ -40,7 +40,7 @@ export function CartProvider({ children }) {
   const [items, setItems] = useState([]);
   const [uid, setUid] = useState(null); // null = guest
   const [loading, setLoading] = useState(true);
-  const [deliveryMethod, setDeliveryMethod] = useState("delivery");
+  const [deliveryMethod, setDeliveryMethod] = useState("Delivery");
   const [discountCode, setDiscountCode] = useState("");
   const [discountAmount, setDiscountAmount] = useState(0);
   const [check, setCheck] = useState(false);
@@ -53,16 +53,21 @@ export function CartProvider({ children }) {
   const [selectedDate, setSelectedDate] = useState("");
 
   const timeSlots = [
-    "11:00 AM - 11:20 AM",
-    "11:20 AM - 11:40 AM",
-    "11:40 AM - 12:00 PM",
-    "12:00 PM - 12:20 PM",
-    "12:20 PM - 12:40 PM",
-    "12:40 PM - 01:00 PM",
-    "01:00 PM - 01:20 PM",
-    "01:20 PM - 01:40 PM",
-    "01:40 PM - 02:00 PM",
-    "02:00 PM - 02:20 PM",
+    "05:00 PM - 05:20 PM",
+    "05:20 PM - 05:40 PM",
+    "05:40 PM - 06:00 PM",
+    "06:00 PM - 06:20 PM",
+    "06:20 PM - 06:40 PM",
+    "06:40 PM - 07:00 PM",
+    "07:00 PM - 07:20 PM",
+    "07:20 PM - 07:40 PM",
+    "07:40 PM - 08:00 PM",
+    "08:00 PM - 08:20 PM",
+    "08:20 PM - 08:40 PM",
+    "08:40 PM - 09:00 PM",
+    "09:00 PM - 09:20 PM",
+    "09:20 PM - 09:40 PM",
+    "09:40 PM - 10:00 PM",
   ];
 
   const getWeekendDates = () => {
@@ -95,6 +100,8 @@ export function CartProvider({ children }) {
   const resetDiscount = () => {
     setDiscountCode("");
     setDiscountAmount(0);
+    setSelectedTime("");
+    setSelectedDate("");
   };
 
   // Track auth state
@@ -241,7 +248,7 @@ export function CartProvider({ children }) {
   const cartCount = items.reduce((sum, i) => sum + i.qty, 0);
   const cartTotal = items.reduce((sum, i) => sum + i.qty * i.price, 0);
   const deliveryFee =
-    deliveryMethod === "delivery"
+    deliveryMethod === "Delivery"
       ? cartTotal >= FREE_DELIVERY_LIMIT
         ? 0
         : DELIVERY_FEE
