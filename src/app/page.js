@@ -6,7 +6,7 @@ import AddtoCart from "../components/AddtoCart";
 export default function Home() {
 
   return (
-    <div className="flex flex-col lg:flex-row  gap-2 pl-2 ">
+    <div className="flex flex-col lg:flex-row  gap-2 p-2 ">
       <div className="flex-1 min-w-0">
         <ItemsPage />
       </div>

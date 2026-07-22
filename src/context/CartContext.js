@@ -290,7 +290,7 @@ export function CartProvider({ children }) {
   };
 
   const DELIVERY_FEE = 3;
-  const FREE_DELIVERY_LIMIT = 150;
+  const FREE_DELIVERY_LIMIT = 15;
   const cartCount = items.reduce((sum, i) => sum + i.qty, 0);
   const cartTotal = items.reduce((sum, i) => sum + i.qty * i.price, 0);
   const deliveryFee =
