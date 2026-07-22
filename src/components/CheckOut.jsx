@@ -196,9 +196,14 @@ const CheckOut = () => {
           <div className="flex flex-col gap-1">
             <label className="text-red-500 ">Email address *</label>
             <input
+              required={true}
               type="email"
               value={userData.emailadd}
-              readOnly
+              onChange={(e) =>
+                setUserData({ ...userData, emailadd: e.target.value })
+              }
+              readOnly={!!uid}
+              placeholder="user@gmail.com"
               className="hover:bg-gray-200 border border-gray-400 focus:border-blue-500 focus:outline-none focus:ring-0 rounded-md py-1 px-2 placeholder:text-gray-400"
             />
           </div>
@@ -315,7 +320,7 @@ const CheckOut = () => {
 
           <div className="space-y-3">
             <div
-              className={`px-2 ${paymentError ? "border border-blue-400 rounded-lg " : ""}`}
+              className={`px-2 py-1 ${paymentError ? "border border-red-400 rounded-lg " : ""}`}
             >
               <label>
                 <input
