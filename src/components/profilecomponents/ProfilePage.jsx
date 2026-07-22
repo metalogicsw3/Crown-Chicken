@@ -14,6 +14,11 @@ import { CgArrowRight } from "react-icons/cg";
 import ProfilePopup from "./ProfilePopup";
 import { RiVerifiedBadgeFill } from "react-icons/ri";
 import { sendVerificationEmail } from "@/lib/auth";
+import PhoneInput from "react-phone-number-input";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import "react-phone-number-input/style.css";
+import { parsePhoneNumber } from "react-phone-number-input";
+
 
 const ProfilePage = () => {
   const [profile, setProfile] = useState({
@@ -45,11 +50,18 @@ const ProfilePage = () => {
 
         if (snap.exists()) {
           const data = snap.data();
+
+          let normalizedPhone = "";
+          if (data.phone && data.phone.trim()) {
+            const parsed = parsePhoneNumber(data.phone, "GB");
+            normalizedPhone = parsed ? parsed.number : "";
+          }
+
           const fetched = {
             name: data.name || " ",
             email: data.email || " ",
             address: data.address || " ",
-            phone: data.phone || " ",
+            phone: normalizedPhone,
             emailVerified: data.emailVerified ?? false,
           };
           setProfile((prev) => ({ ...prev, ...fetched }));
@@ -76,10 +88,9 @@ const ProfilePage = () => {
       const user = auth.currentUser;
       if (!user) return;
 
-      const ukPhoneRegex = /^07\d{9}$/;
-
-      if (!ukPhoneRegex.test(profile.phone)) {
-        toast.error("Enter a valid UK mobile number (e.g. 07400123456)");
+      // Phone Number Validation (international)
+      if (!profile.phone || !isValidPhoneNumber(profile.phone)) {
+        toast.error("Enter a valid phone number");
         return;
       }
 
@@ -261,22 +272,20 @@ const ProfilePage = () => {
             <label className="flex text-sm text-blue-800 font-semibold items-center gap-1">
               Contact Number
             </label>
-            <div className="relative">
-              <BsTelephoneFill
-                size={17}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl"
-              />
-              <input
-                onChange={handleChange}
+            <div className="">
+              <PhoneInput
+                international
+                defaultCountry="GB"
+                onChange={(value) =>
+                  setProfile((prev) => ({ ...prev, phone: value || "" }))
+                }
                 onFocus={() => setIsEditingOpen(true)}
                 readOnly={!isEditingOpen}
                 name="phone"
                 type="tel"
                 value={profile.phone}
-                maxLength={11}
-                pattern="^07\d{9}$"
-                placeholder="07400123456"
-                className="w-full hover:bg-gray-200 border border-gray-400 rounded-lg py-2 pl-10 pr-3 focus:border-blue-500 focus:outline-none focus:ring-0"
+                placeholder="Enter phone number"
+                className="phone-input-custom w-full hover:bg-gray-200 border border-gray-400 rounded-lg py-2 pl-4 pr-3 focus:border-blue-500 focus:outline-none focus:ring-0"
               />
             </div>
           </div>

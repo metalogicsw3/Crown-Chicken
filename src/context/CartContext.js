@@ -52,50 +52,96 @@ export function CartProvider({ children }) {
   const [dateDropdownOpen, setDateDropdownOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
 
-  const timeSlots = [
-    "05:00 PM - 05:20 PM",
-    "05:20 PM - 05:40 PM",
-    "05:40 PM - 06:00 PM",
-    "06:00 PM - 06:20 PM",
-    "06:20 PM - 06:40 PM",
-    "06:40 PM - 07:00 PM",
-    "07:00 PM - 07:20 PM",
-    "07:20 PM - 07:40 PM",
-    "07:40 PM - 08:00 PM",
-    "08:00 PM - 08:20 PM",
-    "08:20 PM - 08:40 PM",
-    "08:40 PM - 09:00 PM",
-    "09:00 PM - 09:20 PM",
-    "09:20 PM - 09:40 PM",
-    "09:40 PM - 10:00 PM",
-  ];
-
-  const getWeekendDates = () => {
+  //Creating 7 Days
+  const getNext7Days = () => {
+    const days = [];
     const today = new Date();
-    const result = [];
 
-    const temp = new Date(today);
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
 
-    while (result.length < 3) {
-      const day = temp.getDay(); // 0=Sun, 5=Fri, 6=Sat
-
-      if (day === 5 || day === 6 || day === 0) {
-        result.push(
-          temp.toLocaleDateString("en-GB", {
-            weekday: "short",
-            day: "2-digit",
-            month: "short",
-          }),
-        );
-      }
-
-      temp.setDate(temp.getDate() + 1);
+      days.push({
+        day: date.toLocaleDateString("en-GB", { weekday: "short" }),
+        label: date.toLocaleDateString("en-GB", {
+          weekday: "short",
+          day: "2-digit",
+          month: "short",
+        }),
+      });
     }
 
-    return result;
+    return days;
   };
 
-  const dateSlots = getWeekendDates();
+  const dateSlots = getNext7Days();
+
+  // Set Time Slot on Day Base
+  const getSlotsByDay = (day) => {
+    switch (day) {
+      case "Mon":
+        return [];
+
+      case "Tue":
+      case "Wed":
+      case "Thu":
+      case "Fri":
+        return generateTimeSlots(17, 22);
+
+      case "Sat":
+        return [...generateTimeSlots(11, 15), ...generateTimeSlots(17, 23)];
+
+      case "Sun":
+        return generateTimeSlots(12, 21);
+
+      default:
+        return [];
+    }
+  };
+
+  //Genrate Time Slot
+  const generateTimeSlots = (startHour, endHour) => {
+    const slots = [];
+
+    const start = new Date();
+    start.setHours(startHour, 0, 0, 0);
+
+    const end = new Date();
+    end.setHours(endHour, 0, 0, 0);
+
+    while (start < end) {
+      const next = new Date(start);
+      next.setMinutes(next.getMinutes() + 20);
+
+      slots.push(
+        `${start.toLocaleTimeString("en-GB", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        })} - ${next.toLocaleTimeString("en-GB", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        })}`,
+      );
+
+      start.setMinutes(start.getMinutes() + 20);
+    }
+
+    return slots;
+  };
+
+  const todayName = new Date().toLocaleDateString("en-GB", {
+    weekday: "short",
+  });
+
+  const selectedDay =
+    deliveryMethod === "Pickup"
+      ? dateSlots.find((d) => d.label === selectedDate)?.day ||
+        dateSlots[0]?.day
+      : todayName;
+
+  const timeSlots = getSlotsByDay(selectedDay);
 
   const resetDiscount = () => {
     setDiscountCode("");

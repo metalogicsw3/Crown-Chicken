@@ -20,23 +20,29 @@ const TimeSlot = () => {
                   }`}
     >
       <div className="max-h-60 w-full overflow-y-auto">
-        {timeSlots.map((slot) => (
-          <button
-            key={slot}
-            onClick={() => {
-              setSelectedTime(slot);
-              setTimeDropdownOpen(false);
-            }}
-            className={`w-full px-2 py-2 text-left text-sm transition-colors duration-200
+        {timeSlots.length === 0 ? (
+          <div className="px-4 py-3 text-center text-red-500 font-medium">
+            Closed
+          </div>
+        ) : (
+          timeSlots.map((slot) => (
+            <button
+              key={slot}
+              onClick={() => {
+                setSelectedTime(slot);
+                setTimeDropdownOpen(false);
+              }}
+              className={`w-full px-2 py-2 text-left text-sm transition-colors duration-200
                         ${
                           selectedTime === slot
                             ? "bg-orange-500 text-white"
                             : "text-gray-700 rounded-lg hover:bg-gray-100"
                         }`}
-          >
-            {slot}
-          </button>
-        ))}
+            >
+              {slot}
+            </button>
+          ))
+        )}
       </div>
     </div>
   );

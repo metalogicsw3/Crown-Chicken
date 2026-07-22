@@ -1,2 +1,13 @@
 @import "tailwindcss";
 
+.phone-input-custom {
+  display: flex;
+  align-items: center;
+}
+
+.phone-input-custom input {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+}

@@ -8,6 +8,7 @@ const DateSlot = () => {
     setDateDropdownOpen,
     selectedDate,
     setSelectedDate,
+    setSelectedTime,
     dateSlots,
   } = useCart();
 
@@ -20,22 +21,23 @@ const DateSlot = () => {
           : "opacity-0 -translate-y-2 scale-95 invisible pointer-events-none"
       }`}
     >
-      <div className="max-h-60 overflow-y-auto">
+      <div className="max-h-28">
         {dateSlots.map((slot) => (
           <button
-            key={slot}
+            key={slot.label}
             onClick={() => {
-              setSelectedDate(slot);
+              setSelectedDate(slot.label);
+              setSelectedTime("");
               setDateDropdownOpen(false);
             }}
             className={`w-full px-2 py-2 text-left text-sm transition-colors duration-200
               ${
-                selectedDate === slot
+                selectedDate === slot.label
                   ? "bg-orange-500 text-white"
                   : "text-gray-700 hover:bg-gray-100"
               }`}
           >
-            {slot}
+            {slot.label}
           </button>
         ))}
       </div>

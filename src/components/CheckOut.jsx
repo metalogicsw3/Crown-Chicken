@@ -12,6 +12,10 @@ import { serverTimestamp } from "firebase/firestore";
 import { doc, getDoc } from "firebase/firestore";
 import { useEffect } from "react";
 import { MdDeliveryDining } from "react-icons/md";
+import PhoneInput from "react-phone-number-input";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import "react-phone-number-input/style.css";
+import { parsePhoneNumber } from "react-phone-number-input";
 
 const CheckOut = () => {
   const {
@@ -37,7 +41,7 @@ const CheckOut = () => {
   });
 
   const [deliveryUnavailable, setDeliveryUnavailable] = useState(false);
-
+  const [paymentError, setPaymentError] = useState(false);
   //Fetch Data
   useEffect(() => {
     const getUserProfile = async () => {
@@ -49,12 +53,18 @@ const CheckOut = () => {
         if (docSnap.exists()) {
           const data = docSnap.data();
 
+          let normalizedPhone = "";
+          if (data.phone) {
+            const parsed = parsePhoneNumber(data.phone, "GB");
+            normalizedPhone = parsed ? parsed.number : "";
+          }
+
           setUserData({
             name: data.name || "",
             emailadd: data.email || "",
             address: data.address || "",
             postcode: data.postcode || "",
-            phonnum: data.phone || "",
+            phonnum: normalizedPhone,
           });
         }
       } catch (error) {
@@ -94,15 +104,22 @@ const CheckOut = () => {
     }
 
     // Phone Number Validation
-    const ukPhoneRegex = /^07\d{9}$/;
+    // const ukPhoneRegex = /^07\d{9}$/;
 
-    if (!ukPhoneRegex.test(userData.phonnum)) {
-      showToast.error("Enter a valid UK mobile number");
+    // if (!ukPhoneRegex.test(userData.phonnum)) {
+    //   showToast.error("Enter a valid UK mobile number");
+    //   return;
+    // }
+
+    if (paymentMethod === "") {
+      setPaymentError(true);
+      showToast.error("Please select Payment method");
       return;
     }
 
-    if (paymentMethod === "") {
-      showToast.error("Please select Payment method");
+    // Phone Number Validation (international)
+    if (!userData.phonnum || !isValidPhoneNumber(userData.phonnum)) {
+      showToast.error("Enter a valid phone number");
       return;
     }
 
@@ -225,17 +242,15 @@ const CheckOut = () => {
             <label>
               Phone<span className="text-red-500">*</span>
             </label>
-            <input
-              required={true}
-              type="tel"
-              maxLength={11}
-              pattern="^07\d{9}$"
-              placeholder="07400123456"
+            <PhoneInput
+              international
+              defaultCountry="GB"
+              placeholder="Enter phone number"
               value={userData.phonnum}
-              onChange={(e) =>
-                setUserData({ ...userData, phonnum: e.target.value })
+              onChange={(value) =>
+                setUserData({ ...userData, phonnum: value || "" })
               }
-              className="hover:bg-gray-200 border border-gray-400 focus:border-blue-500 focus:outline-none focus:ring-0 rounded-md py-1 px-2 placeholder:text-gray-400"
+              className="phone-input-custom hover:bg-gray-200 border border-gray-400 focus-within:border-blue-500 rounded-md py-1 px-2"
             />
           </div>
         </div>
@@ -284,7 +299,8 @@ const CheckOut = () => {
                   {deliveryUnavailable && (
                     <div className="mt-5 rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700">
                       <span className="flex items-center gap-2">
-                      <MdDeliveryDining className="" size={20}/> We only deliver on the following postcodes:
+                        <MdDeliveryDining className="" size={20} /> We only
+                        deliver on the following postcodes:
                       </span>
                       <br />
                       <span className="font-semibold">
@@ -298,12 +314,17 @@ const CheckOut = () => {
           </div>
 
           <div className="space-y-3">
-            <div>
+            <div
+              className={`px-2 ${paymentError ? "border border-blue-400 rounded-lg " : ""}`}
+            >
               <label>
                 <input
                   value="Cash On Delivery"
                   required={true}
-                  onChange={(e) => setPaymentMethod(e.target.value)}
+                  onChange={(e) => {
+                    setPaymentMethod(e.target.value);
+                    setPaymentError(false);
+                  }}
                   type="radio"
                 />{" "}
                 Pay via phone or at the restaurant.
