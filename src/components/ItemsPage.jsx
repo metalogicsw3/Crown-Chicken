@@ -117,10 +117,17 @@ const ItemsPage = () => {
     setSelectedCategory(cat);
     isClickScrollingRef.current = true;
 
-    sectionRefs.current[cat]?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
+    const container = containerRef.current;
+    const section = sectionRefs.current[cat];
+
+    if (container && section) {
+      const offset = 90; 
+
+      container.scrollTo({
+        top: section.offsetTop - offset,
+        behavior: "smooth",
+      });
+    }
 
     if (clickScrollTimeoutRef.current)
       clearTimeout(clickScrollTimeoutRef.current);

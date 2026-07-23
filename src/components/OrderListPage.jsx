@@ -12,7 +12,6 @@ import {
 import { onAuthStateChanged } from "firebase/auth";
 import { db, auth } from "@/lib/firebase";
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
-import { useCart } from "@/context/CartContext";
 
 export default function OrderListPage() {
   const [orders, setOrders] = useState([]);
