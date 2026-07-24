@@ -135,7 +135,7 @@ export default function OrderListPage() {
                   <div className="flex justify-between items-center mt-3 pt-3 border-t">
                     <span className="font-semibold text-gray-800">Total</span>
                     <span className="font-semibold text-gray-900">
-                      £{order.total}
+                      £{(order.total).toFixed(2)}
                     </span>
                   </div>
                 </div>

@@ -1,6 +1,13 @@
 "use client";
 
-import { collection, getDocs } from "firebase/firestore";
+import {
+  collection,
+  getDocsFromServer,
+  doc,
+  updateDoc,
+  orderBy,
+  query,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
 import { GoChevronDown } from "react-icons/go";
@@ -14,7 +21,11 @@ const Orders = () => {
     setLoading(true);
 
     try {
-      const snapshot = await getDocs(collection(db, "orders"));
+      const ordersQuery = query(
+        collection(db, "orders"),
+        orderBy("createdAt", "desc"),
+      );
+      const snapshot = await getDocsFromServer(ordersQuery);
 
       const data = snapshot.docs.map((doc) => ({
         id: doc.id,
@@ -26,6 +37,22 @@ const Orders = () => {
       console.error(error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleStatus = async (id) => {
+    try {
+      await updateDoc(doc(db, "orders", id), {
+        status: true,
+      });
+
+      setOrders((prev) =>
+        prev.map((order) =>
+          order.id === id ? { ...order, status: true } : order,
+        ),
+      );
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -41,122 +68,194 @@ const Orders = () => {
     );
   }
 
-  const cell =
-    "flex items-center justify-center px-3 py-4 text-sm text-gray-700 ";
+  const formatCreatedAt = (timestamp) => {
+    if (!timestamp) return "-";
+
+    return timestamp.toDate().toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
 
   return (
-    <div className="h-[92vh] flex flex-col gap-1 bg-white rounded-xl shadow-md border border-gray-200 overflow-x-auto">
-      {/* Header */}
-      <div className="grid grid-cols-[1.2fr_2.2fr_0.8fr_1fr_1.2fr_1.4fr_1fr_1fr_1.2fr_0.8fr] bg-gray-100 border-b border-gray-300 font-semibold text-gray-800 rounded-t-xl">
-        <div className={cell}>Name</div>
-        <div className={cell}>Email Address</div>
-        <div className={cell}>Date</div>
-        <div className={cell}>Post Code</div>
-        <div className={cell}>Order Type</div>
-        <div className={cell}>Phone Number</div>
-        <div className={cell}>Total</div>
-        <div className={cell}>User Type</div>
-        <div className={cell}>Completed</div>
-        <div className={cell}>View</div>
-      </div>
+    <div className="h-[92vh] bg-white rounded-xl shadow-md border border-gray-200 overflow-auto">
+      <table className="w-full border-collapse">
+        {/* Header */}
+        <thead className="sticky top-0 bg-gray-100 z-10">
+          <tr className="border-b border-gray-300 text-gray-800">
+            <th className="table-head">Name</th>
+            <th className="table-head">Address</th>
+            <th className="table-head">PostCode</th>
+            <th className="table-head">Date</th>
+            <th className="table-head">Time Slot</th>
+            <th className="table-head">Order Type</th>
+            <th className="table-head">Phone Number</th>
+            <th className="table-head">Total</th>
+            <th className="table-head">Status</th>
+            <th className="table-head">View</th>
+          </tr>
+        </thead>
 
-      {/* Body */}
-      {orders.length > 0 ? (
-        orders.map((order) => (
-          <div
-            key={order.id}
-            className="grid grid-cols-[1.2fr_2.2fr_0.8fr_1fr_1.2fr_1.4fr_1fr_1fr_1.2fr_0.8fr] border-b border-gray-200 hover:bg-gray-50 transition-all duration-200"
-          >
-            <div className={cell}>{order.name || "-"}</div>
+        <tbody>
+          {orders.length > 0 ? (
+            orders.map((order) => (
+              <>
+                <tr
+                  key={order.id}
+                  className="border-b border-gray-200 hover:bg-gray-50 transition"
+                >
+                  <td className="px-4 py-5 text-center">{order.name || "-"}</td>
 
-            <div className={`${cell} break-all`}>{order.emailadd || "-"}</div>
+                  <td className="px-4 py-5 text-center text-xs text-gray-400">
+                    {order.address || "-"}
+                  </td>
 
-            <div className={cell}>{order.date || "-"}</div>
+                  <td className="px-4 py-5 text-center">
+                    {order.postcode || "-"}
+                  </td>
 
-            <div className={cell}>{order.postcode || "-"}</div>
+                  <td className="px-4 py-5 text-center whitespace-nowrap">
+                    {order.date || formatCreatedAt(order.createdAt)}
+                  </td>
 
-            <div className={cell}>{order.orderType || "-"}</div>
+                  <td className="px-4 py-5 text-center whitespace-nowrap text-xs">
+                    {order.time || "-"}
+                  </td>
 
-            <div className={cell}>{order.phonnum || "-"}</div>
+                  <td className="px-4 py-5 text-center">
+                    {order.orderType || "-"}
+                  </td>
 
-            <div className={cell}>£{order.total ?? 0}</div>
+                  <td className="px-4 py-5 text-center whitespace-nowrap">
+                    {order.phonnum || "-"}
+                  </td>
 
-            <div className={cell}>{order.userType || "-"}</div>
+                  <td className="px-4 py-5 text-center font-semibold">
+                    £{order.total.toFixed(2)}
+                  </td>
 
-            <div className={cell}>
-              <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-1.5 rounded-md text-sm transition">
-                Done
-              </button>
-            </div>
+                  <td className="px-4 py-5 text-center">
+                    <button
+                      onClick={() => !order.status && handleStatus(order.id)}
+                      disabled={order.status}
+                      className={`px-4 py-1.5 rounded-md text-sm text-white transition ${
+                        order.status
+                          ? "bg-green-600 cursor-default"
+                          : "bg-yellow-500 hover:bg-yellow-600"
+                      }`}
+                    >
+                      {order.status ? "Done" : "Pending"}
+                    </button>
+                  </td>
 
-            <div className={cell}>
-              <button
-                onClick={() =>
-                  setOrderOpenDetails((prev) =>
-                    prev === order.id ? null : order.id,
-                  )
-                }
-                className={`hover:bg-gray-200 p-2 rounded-full transition-all duration-300 ${
-                  orderOpenDetails === order.id ? "rotate-180" : ""
-                }`}
-              >
-                <GoChevronDown size={20} />
-              </button>
-            </div>
+                  <td className="px-4 py-5 text-center">
+                    <button
+                      onClick={() =>
+                        setOrderOpenDetails((prev) =>
+                          prev === order.id ? null : order.id,
+                        )
+                      }
+                      className={`hover:bg-gray-200 p-1 rounded-full transition-all duration-300 ${
+                        orderOpenDetails === order.id ? "rotate-180" : ""
+                      }`}
+                    >
+                      <GoChevronDown size={20} />
+                    </button>
+                  </td>
+                </tr>
+                {/* Order Details */}
+                {orderOpenDetails === order.id && (
+                  <tr>
+                    <td colSpan={10} className="bg-gray-50 px-5 py-4">
+                      <div className="bg-white border border-gray-300 rounded-xl p-5">
+                        {/* Top Info */}
+                        <div className="flex justify-between pb-3 mb-3 border-b border-gray-200">
+                          <div className="px-2 py-1 background-styling">
+                            <span className="font-medium text-gray-800">
+                              Email:
+                            </span>{" "}
+                            <span className="text-gray-600">
+                              {order.emailadd}
+                            </span>
+                          </div>
 
-            {/* Order Details Section */}
-            <div
-              className={`col-span-10 overflow-hidden transition-all duration-300 ease-in-out ${
-                orderOpenDetails === order.id
-                  ? "opacity-100 max-h-[93vh] overflow-y-auto px-10 "
-                  : "max-h-0 opacity-0 p-0"
-              }`}
-            >
-              <div className="bg-white ">
-                {/* Header */}
-                <div className="grid grid-cols-5 font-semibold text-gray-700">
-                  <div className="px-5 py-3">Item</div>
-                  <div className="px-5 py-3 text-center">Quantity</div>
-                  <div className="px-5 py-3 text-right">Price</div>
-                </div>
+                          <div className="px-2 py-1 background-styling">
+                            <span className="font-medium text-gray-800">
+                              Post Code:
+                            </span>{" "}
+                            <span className="text-gray-600">
+                              {order.postcode}
+                            </span>
+                          </div>
 
-                {/* Items */}
-                {order.items?.map((item, index) => (
-                  <div
-                    key={index}
-                    className="grid grid-cols-5 items-center  last:border-b-0 hover:bg-gray-50 transition"
-                  >
-                    <div className="px-5 py-3 font-medium text-gray-700">
-                      {item.name}
-                    </div>
+                          <div className="px-2 py-1 background-styling">
+                            <span className="font-medium text-gray-800">
+                              User Type:
+                            </span>{" "}
+                            <span className="text-gray-600">
+                              {order.userType}
+                            </span>
+                          </div>
+                        </div>
 
-                    <div className="px-5 py-3 text-center text-gray-600">
-                      x {item.qty}
-                    </div>
+                        {/* Items Header */}
 
-                    <div className="px-5 py-3 text-right font-semibold text-green-600">
-                      £{item.price}
-                    </div>
-                  </div>
-                ))}
+                        <div className="grid grid-cols-3 bg-blue-50 rounded-lg font-semibold text-gray-700">
+                          <div className="px-5 py-3">Items</div>
 
-                {/* Footer */}
-                <div className="flex gap-100 items-center px-5 py-4  font-bold text-lg">
-                  <span>Total</span>
-                  <span className="text-green-600">£{order.total}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))
-      ) : (
-        <div className="py-10 text-center text-gray-500">No Orders Found</div>
-      )}
+                          <div className="px-5 py-3 text-center">Quantity</div>
+
+                          <div className="px-5 py-3 text-right">Price</div>
+                        </div>
+
+                        {/* Items */}
+
+                        {order.items?.map((item, index) => (
+                          <div
+                            key={index}
+                            className="grid grid-cols-3 items-center border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition"
+                          >
+                            <div className="px-5 py-3 font-medium text-[#5f5c5c]">
+                              {item.name}
+                            </div>
+
+                            <div className="px-5 py-3 text-center text-gray-600">
+                              x {item.qty}
+                            </div>
+
+                            <div className="px-5 py-3 text-right font-semibold text-green-600">
+                              £{(item.price * item.qty).toFixed(2)}
+                            </div>
+                          </div>
+                        ))}
+
+                        {/* Footer */}
+
+                        <div className="flex justify-between items-center px-5 py-4 mt-2 border-t border-gray-200 font-bold text-lg">
+                          <span>Total</span>
+
+                          <span className="text-green-600">
+                            £{order.total.toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={10} className="py-10 text-center text-gray-500">
+                No Orders Found
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
     </div>
   );
 };
 
 export default Orders;
-
-
-// Email , Postcode , UserType in ko accordian ma rakhna ha kal 

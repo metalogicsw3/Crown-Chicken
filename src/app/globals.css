@@ -11,3 +11,22 @@
   background: transparent;
   width: 100%;
 }
+
+ /* For Accordian of Dashboard Pannel */
+
+.background-styling{
+  background-color: #f3f4f6; 
+  transition: background-color 0.2s ease;
+  border-radius: 0.5rem;
+}
+
+.styling:hover{
+   background-color: #e5e5e5;
+}
+
+ /* For Dashboard Pannel Table Head */
+.table-head{
+  padding: 1rem 0.5rem; 
+  text-align: center;
+  font-weight: 500;
+}
